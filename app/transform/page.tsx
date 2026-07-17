@@ -2,6 +2,7 @@ import PhotoUploader from "@/components/PhotoUploader";
 import StyleSelector from "@/components/StyleSelector";
 import TransformResults from "@/components/TransformResults";
 import Header from "@/components/Header";
+import AdSenseAd from "@/components/AdSenseAd";
 
 export default function TransformPage() {
   return (
@@ -27,6 +28,11 @@ export default function TransformPage() {
             {/* Middle: Style Selection */}
             <div className="lg:col-span-1">
               <StyleSelector />
+              
+              {/* Ad placement */}
+              <div className="mt-8">
+                <AdSenseAd slot="1122334455" className="min-h-[250px]" />
+              </div>
             </div>
 
             {/* Right: Results */}
@@ -48,6 +54,11 @@ export default function TransformPage() {
             </div>
           </div>
         </div>
+
+        {/* Bottom ad */}
+        <section className="container mx-auto px-6 py-12">
+          <AdSenseAd slot="6677889900" className="min-h-[90px]" />
+        </section>
       </main>
     </>
   );
