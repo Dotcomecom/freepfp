@@ -10,57 +10,68 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
 
-      {/* Hero with 3 image boxes - above the fold */}
-      <Hero />
+      {/* Hero headline */}
+      <div className="container mx-auto px-6 pt-10 pb-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">
+          AI Photo Transforms for Your
+          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Profile Picture</span>
+        </h1>
+        <p className="text-lg text-gray-400 mb-2">
+          Generate the perfect AI profile picture in seconds. No design skills needed.
+        </p>
+      </div>
 
-      {/* Credit buttons banner - BELOW hero */}
-      <section id="pricing" className="pb-12">
+      {/* Credit purchase banner */}
+      <section id="pricing" className="py-6">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 border border-purple-500/30 rounded-2xl px-6 py-5">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 border border-purple-500/20 rounded-2xl p-4">
             <Link
               href="/transform"
-              className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-green-500/50 hover:scale-105 text-white font-semibold text-lg"
+              className="group relative px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-green-500/50 hover:scale-105 text-white font-semibold"
             >
               <span className="flex items-center gap-2">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                1 Free Per Day
+                <span>1 Free Per Day</span>
               </span>
             </Link>
 
             <Link
               href="/checkout?credits=100"
-              className="group px-6 py-3 rounded-lg bg-purple-600/80 hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 text-white font-medium"
+              className="group px-4 py-2 rounded-lg bg-purple-600/80 hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 text-white font-medium"
             >
-              <span className="flex flex-col items-center">
-                <span className="text-sm opacity-80">100 Credits</span>
-                <span className="text-lg font-bold">$7.99</span>
+              <span className="flex flex-col items-center text-xs">
+                <span className="opacity-80">100 Credits</span>
+                <span className="font-bold text-base">$7.99</span>
               </span>
             </Link>
 
             <Link
               href="/checkout?credits=500"
-              className="group px-6 py-3 rounded-lg bg-pink-600/80 hover:bg-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 text-white font-medium"
+              className="group px-4 py-2 rounded-lg bg-pink-600/80 hover:bg-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 text-white font-medium"
             >
-              <span className="flex flex-col items-center">
-                <span className="text-sm opacity-80">500 Credits</span>
-                <span className="text-lg font-bold">$29.99</span>
+              <span className="flex flex-col items-center text-xs">
+                <span className="opacity-80">500 Credits</span>
+                <span className="font-bold text-base">$29.99</span>
               </span>
             </Link>
 
             <Link
               href="/checkout?credits=1000"
-              className="group px-6 py-3 rounded-lg bg-amber-600/80 hover:bg-amber-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 text-white font-medium"
+              className="group px-4 py-2 rounded-lg bg-amber-600/80 hover:bg-amber-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 text-white font-medium"
             >
-              <span className="flex flex-col items-center">
-                <span className="text-sm opacity-80">1000 Credits</span>
-                <span className="text-lg font-bold">$79.99</span>
+              <span className="flex flex-col items-center text-xs">
+                <span className="opacity-80">1000 Credits</span>
+                <span className="font-bold text-base">$79.99</span>
               </span>
             </Link>
           </div>
         </div>
       </section>
+
+      {/* 3 image boxes - ONE image per box, no split screen */}
+      <Hero />
 
       <HowItWorks />
       <Features />
