@@ -32,19 +32,19 @@ export default function Home() {
       </section>
 
       <Features />
-      
+
       {/* Ad placement */}
       <section className="container mx-auto px-6 py-8">
         <AdSenseAd slot="1234567890" className="min-h-[90px]" />
       </section>
-      
+
       <HowItWorks />
-      
+
       {/* Ad placement */}
       <section className="container mx-auto px-6 py-8 mb-16">
         <AdSenseAd slot="0987654321" className="min-h-[250px]" />
       </section>
-      
+
       <Footer />
     </main>
   );
