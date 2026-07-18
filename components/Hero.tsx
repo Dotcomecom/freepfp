@@ -24,20 +24,20 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative pt-32 pb-24 overflow-hidden">
+    <section className="relative pt-20 pb-16 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent"></div>
       <div className="container mx-auto px-6 relative">
-        <div className="text-center max-w-4xl mx-auto mb-14">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+        <div className="text-center max-w-4xl mx-auto mb-10">
+          <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
             Transform Your Photo Into
             <span className="block mt-2 gradient-text">Any Style You Want</span>
           </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
             Upload your photo and let AI transform it into professional headshots, goth aesthetics, anime characters, and hundreds more styles. Free daily credits.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {styles.map((style) => (
             <div key={style.name} className="relative group">
               <div className={`relative aspect-square rounded-2xl overflow-hidden border ${style.border} transition shadow-2xl`}>
@@ -63,7 +63,7 @@ export default function Hero() {
           ))}
         </div>
 
-        <div className="text-center mt-14 text-gray-400 text-sm">
+        <div className="text-center mt-10 text-gray-400 text-sm">
           ✨ 3 free transformations daily • No credit card required
         </div>
       </div>
