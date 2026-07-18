@@ -1,37 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 
 export default function Hero() {
   return (
     <section className="relative pt-32 pb-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent"></div>
-
-      {/* SVG Filters for dramatic transformations */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          {/* Anime/Painterly effect - posterize + edge detection look */}
-          <filter id="anime-filter">
-            <feComponentTransfer>
-              <feFuncR type="discrete" tableValues="0 0.4 0.8 1"/>
-              <feFuncG type="discrete" tableValues="0 0.3 0.7 1"/>
-              <feFuncB type="discrete" tableValues="0.2 0.5 0.9 1"/>
-            </feComponentTransfer>
-            <feColorMatrix type="saturate" values="3"/>
-            <feGaussianBlur stdDeviation="0.8"/>
-          </filter>
-          {/* Goth effect - high contrast dark */}
-          <filter id="goth-filter">
-            <feComponentTransfer>
-              <feFuncR type="linear" slope="2.5" intercept="-0.8"/>
-              <feFuncG type="linear" slope="1.5" intercept="-0.3"/>
-              <feFuncB type="linear" slope="3" intercept="-0.5"/>
-            </feComponentTransfer>
-            <feColorMatrix type="saturate" values="0.3"/>
-          </filter>
-        </defs>
-      </svg>
 
       <div className="container mx-auto px-6 relative">
         <div className="text-center max-w-4xl mx-auto mb-14">
@@ -46,10 +20,11 @@ export default function Hero() {
 
         {/* Hero Image Cards - Before/After transformation */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-10">
-          {/* Professional - warm, polished, studio lighting feel */}
+
+          {/* Professional - warm studio lighting, blue-cyan color grade, heavy vignette */}
           <div className="relative group">
             <div className="relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 border-blue-700/30 hover:border-blue-500/50 transition shadow-2xl">
-              {/* Before (left half) */}
+              {/* Before (left half) - original */}
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
                 <Image
                   src="/base.jpg"
@@ -68,27 +43,35 @@ export default function Hero() {
                   alt="Professional style result"
                   fill
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  style={{ transform: 'scale(1.1)' }}
+                  style={{
+                    transform: 'scale(1.1)',
+                    filter: 'brightness(1.2) contrast(1.4) saturate(1.1)'
+                  }}
                   sizes="(max-width: 768px) 100vw, 16vw"
                 />
-                {/* Warm studio lighting overlay */}
+                {/* Warm golden light from top-left */}
                 <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(ellipse at 60% 40%, rgba(255,240,200,0.3), transparent 70%), radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.4), transparent 60%)'
+                  background: 'radial-gradient(ellipse at 30% 20%, rgba(255,220,150,0.45), transparent 65%)'
                 }}></div>
-                {/* Blue-cyan color grade + heavy contrast */}
-                <div className="absolute inset-0 mix-blend-color" style={{
-                  background: 'linear-gradient(135deg, #e8d5b7, #4a90c4)'
-                }}></div>
+                {/* Cool blue shadow on edges */}
                 <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(circle at 40% 30%, rgba(255,255,255,0.15), transparent 40%)'
-                }}></div>
-                {/* Dark edges for studio vignette */}
-                <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5))',
+                  background: 'radial-gradient(ellipse at center, transparent 20%, rgba(20,50,100,0.55))',
                   mixBlendMode: 'multiply'
                 }}></div>
-                {/* Overall warmth + contrast boost */}
-                <div className="absolute inset-0 bg-[#1a0a00]/20 mix-blend-overlay"></div>
+                {/* Teal-cyan color grade */}
+                <div className="absolute inset-0 mix-blend-overlay" style={{
+                  background: 'linear-gradient(180deg, rgba(40,180,200,0.25), rgba(20,60,80,0.15))'
+                }}></div>
+                {/* Studio vignette */}
+                <div className="absolute inset-0" style={{
+                  background: 'radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.65))',
+                  mixBlendMode: 'multiply'
+                }}></div>
+                {/* Highlight glow */}
+                <div className="absolute inset-0" style={{
+                  background: 'radial-gradient(circle at 45% 35%, rgba(255,255,255,0.2), transparent 35%)',
+                  mixBlendMode: 'screen'
+                }}></div>
               </div>
 
               {/* Divider line */}
@@ -100,8 +83,6 @@ export default function Hero() {
                   </svg>
                 </div>
               </div>
-
-              {/* Labels */}
               <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
                 <span className="text-white text-xs font-medium">Before</span>
               </div>
@@ -109,22 +90,18 @@ export default function Hero() {
                 <span className="text-white text-xs font-medium">After</span>
               </div>
             </div>
-
-            {/* Label pill */}
             <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full px-5 py-2 shadow-lg whitespace-nowrap">
               <span className="text-white font-semibold text-sm">Professional</span>
             </div>
-
-            {/* Description */}
             <div className="text-center mt-6">
               <span className="text-gray-400 text-sm">Studio-ready headshot</span>
             </div>
           </div>
 
-          {/* Goth - dark, high contrast, heavy black/purple tint */}
+          {/* Goth - very dark, high contrast, heavy black/purple/blue-black */}
           <div className="relative group">
             <div className="relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 border-purple-700/40 hover:border-purple-400/60 transition shadow-2xl">
-              {/* Before (left half) */}
+              {/* Before (left half) - original */}
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
                 <Image
                   src="/base.jpg"
@@ -145,28 +122,34 @@ export default function Hero() {
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   style={{
                     transform: 'scale(1.1)',
-                    filter: 'url(#goth-filter) contrast(2) brightness(0.6)'
+                    filter: 'brightness(0.4) contrast(2.5) saturate(0.3)'
                   }}
                   sizes="(max-width: 768px) 100vw, 16vw"
                 />
-                {/* Dark purple-black wash */}
+                {/* Deep purple-black wash - multiply makes everything much darker */}
                 <div className="absolute inset-0" style={{
-                  background: 'linear-gradient(180deg, rgba(30,0,50,0.5), rgba(0,0,0,0.8))',
+                  background: 'linear-gradient(180deg, rgba(40,0,60,0.7), rgba(0,0,0,0.85))',
                   mixBlendMode: 'multiply'
                 }}></div>
-                {/* Purple/red accent glow */}
+                {/* Purple color cast */}
                 <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(circle at 50% 50%, rgba(120,0,80,0.4), transparent 70%)',
+                  background: 'linear-gradient(160deg, #1a0025, #0a0010, #050008)',
+                  mixBlendMode: 'overlay'
+                }}></div>
+                {/* Red/violet glow from behind subject */}
+                <div className="absolute inset-0" style={{
+                  background: 'radial-gradient(circle at 50% 45%, rgba(140,0,60,0.3), transparent 50%)',
                   mixBlendMode: 'screen'
                 }}></div>
-                {/* Red-violet color overlay */}
-                <div className="absolute inset-0 mix-blend-overlay" style={{
-                  background: 'linear-gradient(180deg, #2a0030, #0a0015, #1a0020)'
-                }}></div>
-                {/* Heavy vignette - almost black edges */}
+                {/* Near-total blackout at edges */}
                 <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.9))',
+                  background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.3) 10%, rgba(0,0,0,0.95) 55%)',
                   mixBlendMode: 'multiply'
+                }}></div>
+                {/* Cold blue tint */}
+                <div className="absolute inset-0" style={{
+                  background: 'rgba(10,0,30,0.4)',
+                  mixBlendMode: 'color'
                 }}></div>
               </div>
 
@@ -179,8 +162,6 @@ export default function Hero() {
                   </svg>
                 </div>
               </div>
-
-              {/* Labels */}
               <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
                 <span className="text-white text-xs font-medium">Before</span>
               </div>
@@ -188,22 +169,18 @@ export default function Hero() {
                 <span className="text-white text-xs font-medium">After</span>
               </div>
             </div>
-
-            {/* Label pill */}
             <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full px-5 py-2 shadow-lg whitespace-nowrap">
               <span className="text-white font-semibold text-sm">Goth</span>
             </div>
-
-            {/* Description */}
             <div className="text-center mt-6">
               <span className="text-gray-400 text-sm">Dark aesthetic portrait</span>
             </div>
           </div>
 
-          {/* Anime - vibrant, flat-looking, saturated */}
+          {/* Anime - pastel, saturated, dreamy, posterized */}
           <div className="relative group">
             <div className="relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 border-pink-700/30 hover:border-pink-500/50 transition shadow-2xl">
-              {/* Before (left half) */}
+              {/* Before (left half) - original */}
               <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
                 <Image
                   src="/base.jpg"
@@ -224,27 +201,29 @@ export default function Hero() {
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   style={{
                     transform: 'scale(1.1)',
-                    filter: 'url(#anime-filter) saturate(2.5) brightness(1.3) contrast(1.3)'
+                    filter: 'brightness(1.4) contrast(1.3) saturate(2.0) blur(0.8px)'
                   }}
                   sizes="(max-width: 768px) 100vw, 16vw"
                 />
-                {/* Bright pastel overlay */}
+                {/* Pastel pink-blue wash */}
                 <div className="absolute inset-0" style={{
-                  background: 'linear-gradient(135deg, rgba(255,180,220,0.35), rgba(180,220,255,0.3), rgba(255,200,150,0.2))',
+                  background: 'linear-gradient(135deg, rgba(255,180,220,0.5), rgba(180,200,255,0.5), rgba(255,200,180,0.4))',
                   mixBlendMode: 'screen'
                 }}></div>
-                {/* Anime-style color bands */}
-                <div className="absolute inset-0 mix-blend-soft-light" style={{
-                  background: 'repeating-linear-gradient(0deg, rgba(255,200,255,0.1) 0px, transparent 2px, transparent 4px)'
-                }}></div>
-                {/* Soft glow edges */}
+                {/* Bright color pop overlay */}
                 <div className="absolute inset-0" style={{
-                  background: 'radial-gradient(circle at center, rgba(255,255,255,0.1), rgba(200,180,255,0.2))',
-                  mixBlendMode: 'overlay'
+                  background: 'linear-gradient(to bottom right, rgba(255,150,200,0.3), rgba(150,200,255,0.3))',
+                  mixBlendMode: 'color'
                 }}></div>
-                {/* Pink-blue anime color cast */}
-                <div className="absolute inset-0 mix-blend-color" style={{
-                  background: 'linear-gradient(to bottom right, #ffb6d9, #b6d9ff, #ffe0b6)'
+                {/* Dreamy soft light */}
+                <div className="absolute inset-0" style={{
+                  background: 'radial-gradient(circle at center, rgba(255,255,255,0.25), rgba(255,200,255,0.15))',
+                  mixBlendMode: 'soft-light'
+                }}></div>
+                {/* Anime-style flat light edges */}
+                <div className="absolute inset-0" style={{
+                  background: 'radial-gradient(ellipse at center, transparent 30%, rgba(255,180,220,0.35) 70%)',
+                  mixBlendMode: 'overlay'
                 }}></div>
               </div>
 
@@ -257,8 +236,6 @@ export default function Hero() {
                   </svg>
                 </div>
               </div>
-
-              {/* Labels */}
               <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
                 <span className="text-white text-xs font-medium">Before</span>
               </div>
@@ -266,13 +243,9 @@ export default function Hero() {
                 <span className="text-white text-xs font-medium">After</span>
               </div>
             </div>
-
-            {/* Label pill */}
             <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full px-5 py-2 shadow-lg whitespace-nowrap">
               <span className="text-white font-semibold text-sm">Anime</span>
             </div>
-
-            {/* Description */}
             <div className="text-center mt-6">
               <span className="text-gray-400 text-sm">Illustrated anime character</span>
             </div>
