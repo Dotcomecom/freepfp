@@ -2,24 +2,21 @@ export default function Hero() {
   const styles = [
     {
       name: "Professional",
-      before: "/base.jpg",
-      after: "/pro-result.jpg",
+      image: "/pro-result.jpg",
       accent: "from-blue-600 to-cyan-500",
       border: "border-blue-700/30 hover:border-blue-500/50",
-      description: "Studio-ready headshot",
+      description: "Corporate LinkedIn headshot",
     },
     {
       name: "Goth",
-      before: "/base.jpg",
-      after: "/goth-result.jpg",
+      image: "/goth-result.jpg",
       accent: "from-purple-600 to-pink-600",
       border: "border-purple-700/40 hover:border-purple-400/60",
       description: "Dark aesthetic portrait",
     },
     {
       name: "Anime",
-      before: "/base.jpg",
-      after: "/anime-result.jpg",
+      image: "/anime-result.jpg",
       accent: "from-pink-500 to-rose-500",
       border: "border-pink-700/30 hover:border-pink-500/50",
       description: "Illustrated anime character",
@@ -44,50 +41,11 @@ export default function Hero() {
           {styles.map((style) => (
             <div key={style.name} className="relative group">
               <div className={`relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 ${style.border} transition shadow-2xl`}>
-                {/* Before - left half */}
-                <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-                  <img
-                    src={style.before}
-                    alt="Original photo"
-                    className="w-full h-full object-cover object-center transition duration-700 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* After - right half */}
-                <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
-                  <img
-                    src={style.after}
-                    alt={`${style.name} style result`}
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Center divider */}
-                <div className="absolute inset-y-0 left-1/2 w-[2px] bg-white/80 z-20 transform -translate-x-1/2">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white text-purple-900 flex items-center justify-center shadow-lg">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Before/After labels */}
-                <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
-                  <span className="text-white text-xs font-medium">Before</span>
-                </div>
-                <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
-                  <span className="text-white text-xs font-medium">After</span>
-                </div>
+                <img
+                  src={style.image}
+                  alt={`${style.name} style transformation`}
+                  className="w-full h-full object-cover transition duration-700 group-hover:scale-105"
+                />
               </div>
 
               {/* Style badge */}
