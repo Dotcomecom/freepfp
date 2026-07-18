@@ -9,12 +9,11 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
-      <Hero />
 
-      {/* Credit buttons banner */}
-      <section className="py-8 bg-gradient-to-r from-purple-900/20 via-pink-900/20 to-purple-900/20 border-y border-purple-500/30">
+      {/* Credit buttons banner - ABOVE hero */}
+      <section className="pt-24 pb-4">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 border border-purple-500/30 rounded-2xl px-6 py-5">
             <Link
               href="/transform"
               className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-green-500/50 hover:scale-105 text-white font-semibold text-lg"
@@ -59,6 +58,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Hero with 3 image boxes */}
+      <Hero />
 
       <HowItWorks />
       <Features />
