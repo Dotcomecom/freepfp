@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import AuthModal from "./AuthModal";
 
@@ -9,6 +10,7 @@ export default function Header() {
   const { user, signOut } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signup");
+  const router = useRouter();
 
   const handleSignIn = () => {
     setAuthMode("signin");
@@ -22,6 +24,11 @@ export default function Header() {
 
   const switchMode = () => {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
   };
 
   return (
@@ -49,7 +56,7 @@ export default function Header() {
                   <span className="text-sm font-medium text-purple-300">1 free/day</span>
                 </div>
                 <button
-                  onClick={signOut}
+                  onClick={handleSignOut}
                   className="text-gray-300 hover:text-white transition"
                 >
                   Sign Out
