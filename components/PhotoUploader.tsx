@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-export default function PhotoUploader() {
+interface PhotoUploaderProps {
+  onImageUpload?: (imageUrl: string | null) => void;
+}
+
+export default function PhotoUploader({ onImageUpload }: PhotoUploaderProps) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const handleFile = (file: File) => {
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string);
+        const url = reader.result as string;
+        setPreview(url);
+        onImageUpload?.(url);
       };
       reader.readAsDataURL(file);
     }
@@ -32,19 +38,28 @@ export default function PhotoUploader() {
     }
   };
 
+  const handleRemove = () => {
+    setSelectedImage(null);
+    setPreview(null);
+    onImageUpload?.(null);
+  };
+
   return (
     <div className="bg-purple-900/10 border border-purple-900/30 rounded-2xl p-6">
       <h2 className="text-2xl font-bold mb-4 text-white">1. Upload Photo</h2>
-      
+
       {!preview ? (
         <div
-          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
           onDragLeave={() => setDragActive(false)}
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
-            dragActive 
-              ? 'border-purple-500 bg-purple-900/20' 
-              : 'border-purple-700/50 hover:border-purple-600'
+            dragActive
+              ? "border-purple-500 bg-purple-900/20"
+              : "border-purple-700/50 hover:border-purple-600"
           }`}
         >
           <input
@@ -54,27 +69,21 @@ export default function PhotoUploader() {
             className="hidden"
             id="photo-upload"
           />
-          <label htmlFor="photo-upload" className="cursor-pointer">
+          <label htmlFor="photo-upload" className="cursor-pointer block h-full">
             <div className="text-5xl mb-4">📸</div>
             <p className="text-white font-medium mb-2">
               Drop your photo here or click to browse
             </p>
-            <p className="text-gray-400 text-sm">
-              PNG, JPG up to 10MB
-            </p>
+            <p className="text-gray-400 text-sm">PNG, JPG up to 10MB</p>
           </label>
         </div>
       ) : (
         <div className="relative">
           <div className="aspect-square rounded-xl overflow-hidden bg-gray-900">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
+            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           </div>
           <button
-            onClick={() => { setSelectedImage(null); setPreview(null); }}
+            onClick={handleRemove}
             className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-lg px-3 py-1.5 text-sm transition"
           >
             Remove
@@ -83,7 +92,7 @@ export default function PhotoUploader() {
       )}
 
       <p className="text-gray-400 text-sm mt-4">
-        💡 Clear face photos work best. No need to show a real LinkedIn profile — just upload any clear headshot.
+        💡 Clear face photos work best — any clear headshot is fine.
       </p>
     </div>
   );
