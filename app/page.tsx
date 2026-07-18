@@ -21,7 +21,10 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Credit purchase banner */}
+      {/* 3 image boxes - ONE image per box */}
+      <Hero />
+
+      {/* Credit purchase banner - below hero images */}
       <section id="pricing" className="py-6">
         <div className="container mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 border border-purple-500/20 rounded-2xl p-4">
@@ -69,9 +72,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3 image boxes - ONE image per box, no split screen */}
-      <Hero />
 
       <HowItWorks />
       <Features />
