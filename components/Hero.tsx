@@ -3,24 +3,32 @@ import Image from "next/image";
 const styles = [
   {
     name: "Professional",
-    after: "/pro-after.jpg",
     note: "Studio-ready headshot",
     borderColor: "border-blue-700/30 hover:border-blue-500/50",
     accent: "from-blue-600 to-cyan-500",
+    // Warm, sunny, high-contrast studio headshot look
+    afterFilters: "brightness(1.15) contrast(1.2) saturate(1.3) hue-rotate(-8deg)",
+    afterOverlay: "linear-gradient(135deg, rgba(255,220,170,0.22), rgba(255,178,102,0.18), rgba(135,206,250,0.15))",
   },
   {
     name: "Goth",
-    after: "/goth-after.jpg",
     note: "Dark aesthetic portrait",
     borderColor: "border-purple-700/40 hover:border-purple-400/60",
     accent: "from-purple-600 to-pink-600",
+    // Deep, moody, dark purple-tinted portrait
+    afterFilters: "brightness(0.5) contrast(1.8) saturate(0.4) hue-rotate(250deg)",
+    afterOverlay:
+      "radial-gradient(ellipse at center, transparent 25%, rgba(40,0,60,0.85)), linear-gradient(180deg, rgba(150,0,200,0.25), rgba(0,0,0,0.55))",
   },
   {
     name: "Anime",
-    after: "/anime-after.jpg",
     note: "Illustrated anime character",
     borderColor: "border-pink-700/30 hover:border-pink-500/50",
     accent: "from-pink-500 to-rose-500",
+    // Bright, ultra-saturated + slight blur = painted/illustrated look
+    afterFilters: "brightness(1.35) contrast(1.4) saturate(2.6) hue-rotate(18deg) blur(1.5px)",
+    afterOverlay:
+      "linear-gradient(45deg, rgba(255,182,193,0.5), rgba(176,224,230,0.48), rgba(255,192,203,0.5))",
   },
 ];
 
@@ -42,14 +50,15 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* 3 transformation boxes — same base on the left, distinct style on the right */}
+        {/* 3 transformation boxes: SAME base photo left and right — the right side gets a
+            distinct CSS filter + color overlay to clearly read as a different "style". */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-10">
           {styles.map((s) => (
             <div key={s.name} className="relative group">
               <div
                 className={`relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 ${s.borderColor} transition shadow-2xl`}
               >
-                {/* Original / before — LEFT half */}
+                {/* LEFT — Original */}
                 <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
                   <Image
                     src="/base.jpg"
@@ -61,30 +70,44 @@ export default function Hero() {
                   />
                 </div>
 
-                {/* Distinct style result — RIGHT half */}
+                {/* RIGHT — Same base photo, transformed with filter + overlay */}
                 <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
                   <Image
-                    src={s.after}
+                    src="/base.jpg"
                     alt={`${s.name} style result`}
                     fill
-                    className="object-cover object-center transition duration-700 group-hover:scale-105"
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    style={{ filter: s.afterFilters, transform: "scale(1.08)" }}
                     sizes="(max-width: 768px) 100vw, 16vw"
                   />
-                  {/* gradient overlay that fades the seam */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-950/40 via-transparent to-transparent"></div>
                 </div>
 
-                {/* Vertical divider line with arrow */}
+                {/* Color/texture overlay on the "after" side */}
+                <div
+                  className="absolute inset-y-0 right-0 w-1/2 z-[5] pointer-events-none"
+                  style={{ background: s.afterOverlay }}
+                />
+
+                {/* Vertical divider with arrow icon */}
                 <div className="absolute inset-y-0 left-1/2 w-[2px] bg-white/80 z-20 transform -translate-x-1/2">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white text-purple-900 flex items-center justify-center shadow-lg">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white text-purple-900 flex items-center justify-center shadow-lg">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
                   </div>
                 </div>
 
-                {/* Before / After labels */}
+                {/* Labels */}
                 <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
                   <span className="text-white text-xs font-medium">Before</span>
                 </div>
@@ -93,8 +116,10 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Style badge with description */}
-              <div className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r ${s.accent} rounded-full px-5 py-2 shadow-lg whitespace-nowrap`}>
+              {/* Style badge */}
+              <div
+                className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r ${s.accent} rounded-full px-5 py-2 shadow-lg whitespace-nowrap`}
+              >
                 <span className="text-white font-semibold text-sm">{s.name}</span>
               </div>
               <div className="text-center mt-6">
