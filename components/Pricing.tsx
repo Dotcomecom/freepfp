@@ -5,7 +5,7 @@ export default function Pricing() {
       price: "$0",
       period: "forever",
       features: [
-        "3 free transformations daily",
+        "1 free transformation daily",
         "All styles available",
         "Standard quality",
         "Watermark removed",

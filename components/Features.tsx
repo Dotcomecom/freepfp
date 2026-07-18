@@ -1,54 +1,57 @@
 export default function Features() {
   const features = [
     {
-      icon: "⚡",
-      title: "Lightning Fast",
-      description: "Get your transformed photos in seconds, not hours. Our AI processes your images instantly."
+      title: "AI-Powered Magic",
+      description: "State-of-the-art AI transforms your photos into any style you imagine",
+      icon: "✨"
     },
     {
-      icon: "🎨",
-      title: "Hundreds of Styles",
-      description: "From professional headshots to fantasy characters, anime, goth, cyberpunk, and everything in between."
+      title: "Multiple Styles",
+      description: "From LinkedIn pro to Alt/Goth, Anime, and more - find your perfect look",
+      icon: "🎨"
     },
     {
-      icon: "🔒",
-      title: "Privacy First",
-      description: "Your photos are encrypted and automatically deleted after 24 hours. We never store or share your images."
+      title: "Gender & Style Options",
+      description: "Choose your gender presentation and aesthetic for personalized results",
+      icon: "👤"
     },
     {
-      icon: "💎",
       title: "Free Daily Credit",
-      description: "Get 1 free transformation every day. No credit card required to start."
+      description: "Get 1 free transformation every day - no payment required to start",
+      icon: "🎁"
     },
     {
-      icon: "📱",
-      title: "Perfect for Social Media",
-      description: "Optimized dimensions for LinkedIn, Instagram, Twitter, Discord, and all major platforms."
+      title: "High-Quality Output",
+      description: "Download high-resolution images ready for any platform",
+      icon: "📸"
     },
     {
-      icon: "🎯",
-      title: "High Quality Output",
-      description: "Professional-grade AI models deliver stunning, photorealistic results every time."
+      title: "Instant Results",
+      description: "Generate your new profile picture in seconds, not hours",
+      icon: "⚡"
     }
   ];
 
   return (
-    <section id="features" className="py-20 bg-gradient-to-b from-transparent to-purple-900/5">
+    <section className="py-20 bg-gradient-to-b from-[#0a0a0a] to-[#1a0a1f]">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Why Choose <span className="gradient-text">FreePFP.ai</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Everything You Need
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            The fastest, most versatile AI profile picture generator on the web.
+          <p className="text-gray-400 text-lg">
+            Powerful features to create the perfect profile picture
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="card-hover bg-purple-900/10 border border-purple-900/30 rounded-2xl p-8">
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-2xl font-bold mb-3 text-white">{feature.title}</h3>
+            <div
+              key={index}
+              className="bg-purple-900/20 rounded-2xl p-8 border border-purple-800/30 hover:border-purple-700/50 transition-all hover:transform hover:scale-105"
+            >
+              <div className="text-5xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
               <p className="text-gray-400">{feature.description}</p>
             </div>
           ))}

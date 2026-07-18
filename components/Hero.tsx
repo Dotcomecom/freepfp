@@ -1,72 +1,115 @@
-export default function Hero() {
-  const styles = [
-    {
-      name: "Professional",
-      image: "/IMG_2718.jpeg",
-      accent: "from-blue-600 to-cyan-500",
-      border: "border-blue-500/40 hover:border-blue-400/60",
-      description: "Studio-ready LinkedIn headshot",
-    },
-    {
-      name: "Goth",
-      image: "/grok-image-93cf2e6a-8925-4db8-a85b-8c85e943ceac.jpg",
-      accent: "from-purple-600 to-pink-600",
-      border: "border-purple-500/40 hover:border-purple-400/60",
-      description: "Dark aesthetic portrait",
-    },
-    {
-      name: "Anime",
-      image: "/grok-image-a70ca765-3f27-4c9b-94e2-645bbc1e70e1.jpg",
-      accent: "from-pink-500 to-rose-500",
-      border: "border-pink-500/40 hover:border-pink-400/60",
-      description: "Illustrated anime character",
-    },
-  ];
+import Link from 'next/link';
 
+export default function Hero() {
   return (
-    <section className="relative pt-16 pb-8 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent"></div>
-      <div className="container mx-auto px-6 relative">
-        <div className="text-center max-w-4xl mx-auto mb-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
-            Transform Your Photo Into
-            <span className="block mt-1 gradient-text">Any Style You Want</span>
+    <div className="container mx-auto px-6 pt-12 pb-20">
+      <div className="flex flex-col lg:flex-row items-center gap-12">
+        {/* Left side - Content */}
+        <div className="flex-1 text-center lg:text-left">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Transform Your Photos into
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Any Style</span>
           </h1>
-          <p className="text-lg text-gray-300 mb-4 max-w-2xl mx-auto">
-            Upload your photo and let AI transform it into professional headshots, goth aesthetics, anime characters, and hundreds more styles.
+          <p className="text-xl text-gray-300 mb-8">
+            Generate the perfect AI profile picture in seconds. No design skills needed.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <Link href="/transform" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all shadow-lg hover:shadow-xl">
+              Start Creating - 1 Free Per Day
+            </Link>
+            <Link href="/#pricing" className="bg-purple-800/30 hover:bg-purple-800/50 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all border border-purple-700">
+              View Pricing
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {styles.map((style) => (
-            <div key={style.name} className="relative group">
-              <div className={`relative aspect-square rounded-2xl overflow-hidden border ${style.border} transition shadow-2xl`}>
-                <img
-                  src={style.image}
-                  alt={`${style.name} style transformation`}
-                  className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-
-              {/* Style badge */}
-              <div className="mt-3 flex justify-center">
-                <span className={`bg-gradient-to-r ${style.accent} rounded-full px-4 py-1.5 shadow-lg whitespace-nowrap text-white font-semibold text-sm`}>
-                  {style.name}
-                </span>
-              </div>
-
-              {/* Description */}
-              <div className="text-center mt-2">
-                <span className="text-gray-300 text-sm">{style.description}</span>
+        {/* Right side - Image grid */}
+        <div className="flex-1 grid grid-cols-1 gap-4 max-w-xl">
+          {/* Professional */}
+          <div className="rounded-2xl overflow-hidden bg-purple-900/30 p-1 group relative">
+            <div className="flex items-center justify-center aspect-square relative rounded-xl overflow-hidden bg-purple-900/50">
+              <div className="w-full h-full flex items-center justify-center relative">
+                {/* Before side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/base.jpg" alt="Before" className="w-full h-full object-cover" />
+                </div>
+                {/* Divider */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/30 z-10"></div>
+                {/* After side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/pro-result.jpg" alt="Professional result" className="w-full h-full object-cover" />
+                </div>
+                {/* Labels */}
+                <div className="absolute bottom-2 left-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">Before</div>
+                <div className="absolute bottom-2 right-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">After</div>
+                {/* Blend overlay at seam */}
+                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-8 bg-gradient-to-r from-transparent via-white/5 to-transparent z-5"></div>
               </div>
             </div>
-          ))}
-        </div>
+            <div className="p-3 text-center">
+              <p className="text-sm text-gray-300 font-semibold">LinkedIn Profile</p>
+            </div>
+          </div>
 
-        <div className="text-center mt-6 text-gray-400 text-sm">
-          ✨ 1 free transformation daily • No credit card required
+          {/* Goths */}
+          <div className="rounded-2xl overflow-hidden bg-purple-900/30 p-1 group relative">
+            <div className="flex items-center justify-center aspect-square relative rounded-xl overflow-hidden bg-purple-900/50">
+              <div className="w-full h-full flex items-center justify-center relative">
+                {/* Before side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/base.jpg" alt="Before" className="w-full h-full object-cover" />
+                </div>
+                {/* Divider */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/30 z-10"></div>
+                {/* After side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/goth-result.jpg" alt="Goth result" className="w-full h-full object-cover" />
+                </div>
+                {/* Labels */}
+                <div className="absolute bottom-2 left-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">Before</div>
+                <div className="absolute bottom-2 right-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">After</div>
+                {/* Blend overlay at seam */}
+                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-8 bg-gradient-to-r from-transparent via-white/5 to-transparent z-5"></div>
+              </div>
+            </div>
+            <div className="p-3 text-center">
+              <p className="text-sm text-gray-300 font-semibold">Alt / Goth</p>
+            </div>
+          </div>
+
+          {/* Anime */}
+          <div className="rounded-2xl overflow-hidden bg-purple-900/30 p-1 group relative">
+            <div className="flex items-center justify-center aspect-square relative rounded-xl overflow-hidden bg-purple-900/50">
+              <div className="w-full h-full flex items-center justify-center relative">
+                {/* Before side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/base.jpg" alt="Before" className="w-full h-full object-cover" />
+                </div>
+                {/* Divider */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/30 z-10"></div>
+                {/* After side */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img src="/anime-result.jpg" alt="Anime result" className="w-full h-full object-cover" />
+                </div>
+                {/* Labels */}
+                <div className="absolute bottom-2 left-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">Before</div>
+                <div className="absolute bottom-2 right-4 bg-black/60 px-2 py-1 rounded text-xs text-white z-10">After</div>
+                {/* Blend overlay at seam */}
+                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-8 bg-gradient-to-r from-transparent via-white/5 to-transparent z-5"></div>
+              </div>
+            </div>
+            <div className="p-3 text-center">
+              <p className="text-sm text-gray-300 font-semibold">Anime</p>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+
+      <div className="mt-12 text-center">
+        <Link href="/transform" className="text-purple-400 hover:text-purple-300 transition text-sm font-medium">
+          Try It Now → 1 Free Per Day
+        </Link>
+      </div>
+    </div>
   );
 }

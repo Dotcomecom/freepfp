@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="border-t border-purple-900/20 py-12">
@@ -9,37 +11,35 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">FreePFP<span className="text-purple-400">.ai</span></span>
             </div>
             <p className="text-gray-400 text-sm">
-              Transform your photos into any style with AI. Free daily credits, no signup required.
+              Transform your photos into any style with AI. Free daily credits.
             </p>
           </div>
           
           <div>
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Features</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Pricing</a></li>
+              <li><Link href="/transform" className="text-gray-400 hover:text-white transition">Create</Link></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">Styles</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition">Examples</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition">API</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="text-white font-semibold mb-4">Company</h4>
+            <h4 className="text-white font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-400 hover:text-white transition">About</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Blog</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Careers</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Contact</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">Help Center</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">Contact Us</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">FAQ</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-white font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Privacy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">Terms</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition">Terms of Service</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition">Cookie Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition">GDPR</a></li>
             </ul>
           </div>
         </div>
