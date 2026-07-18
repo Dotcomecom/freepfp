@@ -64,7 +64,7 @@ export default function Hero() {
         </div>
 
         <div className="text-center mt-6 text-gray-400 text-sm">
-          ✨ 3 free transformations daily • No credit card required
+          ✨ 1 free transformation daily • No credit card required
         </div>
       </div>
     </section>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HowItWorks() {
   const steps = [
     {
@@ -49,9 +51,11 @@ export default function HowItWorks() {
         </div>
         
         <div className="text-center mt-12">
-          <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-semibold text-lg">
-            Try It Now - 3 Free Credits
-          </button>
+          <Link href="/transform">
+            <span className="inline-block cursor-pointer px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-semibold text-lg">
+              Try It Now - 1 Free Per Day
+            </span>
+          </Link>
         </div>
       </div>
     </section>

@@ -17,8 +17,8 @@ export default function Features() {
     },
     {
       icon: "💎",
-      title: "Free Daily Credits",
-      description: "Get 3 free transformations every day. No credit card required to start."
+      title: "Free Daily Credit",
+      description: "Get 1 free transformation every day. No credit card required to start."
     },
     {
       icon: "📱",
