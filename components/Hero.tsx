@@ -3,28 +3,34 @@ import Image from "next/image";
 const styles = [
   {
     name: "Professional",
-    filter: "contrast(1.1) saturate(0.9) brightness(1.05)",
+    after: "/pro-after.jpg",
+    note: "Studio-ready headshot",
     borderColor: "border-blue-700/30 hover:border-blue-500/50",
+    accent: "from-blue-600 to-cyan-500",
   },
   {
     name: "Goth",
-    filter: "contrast(1.3) saturate(0.7) brightness(0.85) hue-rotate(-10deg)",
+    after: "/goth-after.jpg",
+    note: "Dark aesthetic portrait",
     borderColor: "border-purple-700/40 hover:border-purple-400/60",
+    accent: "from-purple-600 to-pink-600",
   },
   {
     name: "Anime",
-    filter: "contrast(1.2) saturate(1.6) brightness(1.1)",
+    after: "/anime-after.jpg",
+    note: "Illustrated anime character",
     borderColor: "border-pink-700/30 hover:border-pink-500/50",
+    accent: "from-pink-500 to-rose-500",
   },
 ];
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden">
+    <section className="relative pt-32 pb-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent"></div>
 
       <div className="container mx-auto px-6 relative">
-        <div className="text-center max-w-4xl mx-auto mb-12">
+        <div className="text-center max-w-4xl mx-auto mb-14">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Transform Your Photo Into
             <span className="block mt-2 gradient-text">Any Style You Want</span>
@@ -36,39 +42,49 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* 3 transformations - before/after split view */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+        {/* 3 transformation boxes — same base on the left, distinct style on the right */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-10">
           {styles.map((s) => (
             <div key={s.name} className="relative group">
-              <div className={`aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 ${s.borderColor} transition relative`}>
-                {/* Original photo - left half */}
-                <div className="absolute inset-0 w-1/2 overflow-hidden z-10">
+              <div
+                className={`relative aspect-square rounded-2xl overflow-hidden border bg-purple-950/20 ${s.borderColor} transition shadow-2xl`}
+              >
+                {/* Original / before — LEFT half */}
+                <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
                   <Image
                     src="/base.jpg"
-                    alt="Original"
+                    alt="Original photo"
                     fill
-                    className="object-cover object-left"
-                    sizes="(max-width: 768px) 50vw, 16vw"
+                    className="object-cover object-center transition duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 16vw"
                     priority
                   />
                 </div>
 
-                {/* Transformed photo - right half */}
-                <div className="absolute inset-0 w-1/2 right-0 left-auto overflow-hidden">
+                {/* Distinct style result — RIGHT half */}
+                <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
                   <Image
-                    src="/base.jpg"
-                    alt={`${s.name} transformation`}
+                    src={s.after}
+                    alt={`${s.name} style result`}
                     fill
-                    className="object-cover object-right transition duration-500 group-hover:scale-110"
-                    style={{ filter: s.filter }}
-                    sizes="(max-width: 768px) 50vw, 16vw"
+                    className="object-cover object-center transition duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 16vw"
                   />
+                  {/* gradient overlay that fades the seam */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-950/40 via-transparent to-transparent"></div>
                 </div>
 
-                {/* Vertical divider line */}
-                <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/80 z-20 transform -translate-x-1/2"></div>
+                {/* Vertical divider line with arrow */}
+                <div className="absolute inset-y-0 left-1/2 w-[2px] bg-white/80 z-20 transform -translate-x-1/2">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white text-purple-900 flex items-center justify-center shadow-lg">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </div>
+                </div>
 
-                {/* Labels */}
+                {/* Before / After labels */}
                 <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1 z-30">
                   <span className="text-white text-xs font-medium">Before</span>
                 </div>
@@ -77,15 +93,18 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Style name label */}
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full px-4 py-1.5 shadow-lg">
+              {/* Style badge with description */}
+              <div className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r ${s.accent} rounded-full px-5 py-2 shadow-lg whitespace-nowrap`}>
                 <span className="text-white font-semibold text-sm">{s.name}</span>
+              </div>
+              <div className="text-center mt-6">
+                <span className="text-gray-400 text-sm">{s.note}</span>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-12 text-gray-500 text-sm">
+        <div className="text-center mt-14 text-gray-500 text-sm">
           ✨ 3 free transformations daily • No credit card required
         </div>
       </div>
