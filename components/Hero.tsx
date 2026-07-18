@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
@@ -16,12 +19,16 @@ export default function Hero() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-semibold text-lg shadow-lg shadow-purple-500/25">
-              Start Transforming - It's Free
-            </button>
-            <button className="px-8 py-4 bg-purple-900/30 border border-purple-700/50 text-white rounded-lg hover:bg-purple-900/50 transition font-semibold text-lg">
-              See Examples
-            </button>
+            <Link href="/transform">
+              <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-semibold text-lg shadow-lg shadow-purple-500/25">
+                Start Transforming - It&apos;s Free
+              </button>
+            </Link>
+            <a href="#features">
+              <button className="px-8 py-4 bg-purple-900/30 border border-purple-700/50 text-white rounded-lg hover:bg-purple-900/50 transition font-semibold text-lg">
+                See Examples
+              </button>
+            </a>
           </div>
         </div>
         
@@ -29,13 +36,16 @@ export default function Hero() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Professional */}
           <div className="relative group">
-            <div className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-purple-900/30 group-hover:border-purple-700/50 transition">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mb-4"></div>
-                  <div className="text-gray-400 text-sm">Professional</div>
-                </div>
-              </div>
+            <div className="aspect-square rounded-2xl overflow-hidden border border-purple-900/30 group-hover:border-purple-700/50 transition">
+              <Image
+                src="/professional.jpg"
+                alt="Professional headshot style"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-300"
+                sizes="(max-width: 768px) 100vw, 33vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
             </div>
             <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-3">
               <span className="text-white font-medium text-sm">Professional</span>
@@ -45,13 +55,16 @@ export default function Hero() {
           
           {/* Goth */}
           <div className="relative group">
-            <div className="aspect-square bg-gradient-to-br from-purple-900 to-pink-900 rounded-2xl overflow-hidden border border-purple-700/30 group-hover:border-purple-500/50 transition">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-purple-600 to-pink-700 rounded-full mb-4"></div>
-                  <div className="text-gray-400 text-sm">Goth</div>
-                </div>
-              </div>
+            <div className="aspect-square rounded-2xl overflow-hidden border border-purple-700/30 group-hover:border-purple-500/50 transition">
+              <Image
+                src="/goth.jpg"
+                alt="Goth aesthetic style"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-300"
+                sizes="(max-width: 768px) 100vw, 33vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
             </div>
             <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-3">
               <span className="text-white font-medium text-sm">Goth</span>
@@ -61,13 +74,16 @@ export default function Hero() {
           
           {/* Anime */}
           <div className="relative group">
-            <div className="aspect-square bg-gradient-to-br from-pink-900 to-orange-900 rounded-2xl overflow-hidden border border-pink-700/30 group-hover:border-pink-500/50 transition">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-pink-500 to-orange-500 rounded-full mb-4"></div>
-                  <div className="text-gray-400 text-sm">Anime</div>
-                </div>
-              </div>
+            <div className="aspect-square rounded-2xl overflow-hidden border border-pink-700/30 group-hover:border-pink-500/50 transition">
+              <Image
+                src="/anime.jpg"
+                alt="Anime style"
+                fill
+                className="object-cover group-hover:scale-105 transition duration-300"
+                sizes="(max-width: 768px) 100vw, 33vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
             </div>
             <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-3">
               <span className="text-white font-medium text-sm">Anime</span>
