@@ -12,12 +12,15 @@ export default function Home() {
 
       {/* Hero headline */}
       <div className="container mx-auto px-6 pt-10 pb-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">
-          AI Photo Transforms for Your
-          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Profile Picture</span>
+        <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
+          LinkedIn, Goth, Anime, Cyberpunk, Vaporwave
+          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> &amp; 7 More Styles</span>
         </h1>
         <p className="text-lg text-gray-400 mb-2">
-          Generate the perfect AI profile picture in seconds. No design skills needed.
+          Upload a photo, pick your aesthetic, and generate a stunning AI profile picture in seconds.
+        </p>
+        <p className="text-sm text-gray-500 mb-2">
+          12 styles: LinkedIn, Goth, Anime, Fairycore, Grunge, Indie Sleaze, Cottagecore, Cyberpunk, Dark Academia, Maximalist, Minimalist, Vaporwave
         </p>
       </div>
 
