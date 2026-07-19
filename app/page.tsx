@@ -10,8 +10,11 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
 
+      {/* Spacer so content sits below fixed header */}
+      <div className="h-24 md:h-28" />
+
       {/* Hero headline */}
-      <div className="container mx-auto px-6 pt-10 pb-4 text-center">
+      <div className="container mx-auto px-6 pb-4 text-center">
         <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
           LinkedIn, Goth, Anime, Cyberpunk, Vaporwave
           <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> &amp; 7 More Styles</span>
