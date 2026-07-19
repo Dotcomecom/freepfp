@@ -22,7 +22,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Top 3 showcase boxes */}
+      {/* 3 showcase boxes only - no second row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-6xl mx-auto">
         {topStyles.map((style, i) => (
           <div key={i} className="group relative">
