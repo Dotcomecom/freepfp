@@ -27,18 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [credits, setCredits] = useState(0);
 
-  // Supabase is always configured now (hardcoded defaults in lib/supabase.ts)
-  const hasSupabase = () => true;
-
-  const getSb = () => getSupabaseClient();
-
   const refreshCredits = async () => {
     if (!user) return;
 
     try {
-      const db = getSb();
-      const { data, error } = await db
-        .from("profiles")
+      const db = getSupabaseClient();
+      const { data, error } = await (db.from("profiles") as any)
         .select("credits")
         .eq("id", user.id)
         .single();
@@ -77,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       try {
-        const db = getSb();
+        const db = getSupabaseClient();
         const { data } = await db.auth.getUser();
         setUser(data.user);
         setLoading(false);
@@ -111,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const db = getSb();
+      const db = getSupabaseClient();
       const { error } = await db.auth.signInWithPassword({ email, password });
       return { error: error?.message };
     } catch (err: any) {
@@ -121,10 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const db = getSb();
+      const db = getSupabaseClient();
       const { data, error } = await db.auth.signUp({ email, password });
       if (!error && data.user) {
-        await db.from("profiles").upsert({
+        await (db.from("profiles") as any).upsert({
           id: data.user.id,
           email: data.user.email,
           credits: FREE_DAILY_CREDITS,
@@ -139,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      const db = getSb();
+      const db = getSupabaseClient();
       await db.auth.signOut();
     } catch {}
     localStorage.removeItem(FALLBACK_USER_KEY);
@@ -152,9 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (credits <= 0) return { success: false, error: "No credits available" };
 
     try {
-      const db = getSb();
-      const { data: profile } = await db
-        .from("profiles")
+      const db = getSupabaseClient();
+      const { data: profile } = await (db.from("profiles") as any)
         .select("credits")
         .eq("id", user.id)
         .single();
@@ -163,8 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: "No credits available" };
       }
 
-      await db
-        .from("profiles")
+      await (db.from("profiles") as any)
         .update({ credits: profile.credits - 1 })
         .eq("id", user.id);
 
@@ -203,6 +195,3 @@ export function useAuth() {
   }
   return context;
 }
-
-// Re-export for backward compatibility
-export { getSb as getSupabaseClient };
