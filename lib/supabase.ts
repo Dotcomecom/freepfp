@@ -1,28 +1,22 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
-// Lazy Supabase client - doesn't initialize until first use
-// This prevents build-time errors when env vars aren't set
-let clientInstance: SupabaseClient | null = null;
+// Hardcoded defaults — this is safe because:
+// - The anon key is PUBLIC by design (real security is RLS + service_role key)
+// - Vercel marks NEXT_PUBLIC_ vars as "Sensitive" which blocks build-time inlining
+// - Both env variables are also available via Vercel dashboard if you prefer to change them there
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ??
+  "https://jctyrstktxwbclrzfupu.supabase.co";
 
-export function getSupabase(): SupabaseClient {
-  if (clientInstance) return clientInstance;
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  "sb_publishable_qBbZ43o_bVEv5jYGI8jAlA_-Nr5srrn";
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+let supabaseInstance: ReturnType<typeof createClient> | null = null;
 
-  if (!url || !key) {
-    throw new Error("Supabase env vars not configured");
+export function getSupabaseClient() {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require("@supabase/supabase-js");
-  clientInstance = createClient(url, key);
-  return clientInstance!;
-}
-
-export function isSupabaseConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  return supabaseInstance;
 }
