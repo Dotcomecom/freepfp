@@ -1,74 +1,97 @@
-"use client";
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
 
 export default function Footer() {
-  const router = useRouter();
-
-  const scrollToSection = (sectionId: string) => {
-    router.push("/");
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
-  };
-
   return (
-    <footer className="border-t border-purple-900/20 py-12">
-      <div className="container mx-auto px-6">
+    <footer id="footer" className="bg-[#0a0a0a] border-t border-purple-900/20 mt-20">
+      <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          {/* Brand */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg"></div>
-              <span className="text-xl font-bold text-white">FreePFP<span className="text-purple-400">.ai</span></span>
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-amber-500 flex items-center justify-center text-lg font-black text-white shadow-lg shadow-purple-500/20">
+                F
+              </div>
+              <span className="text-lg font-bold">
+                <span className="text-white">Free</span>
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">PFP.ai</span>
+              </span>
             </div>
-            <p className="text-gray-400 text-sm">
-              Transform your photos into any style with AI. Free daily credits.
-            </p>
-            <p className="text-gray-400 text-sm mt-3">
-              Contact us: <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300 transition">hello@theaibarn.com</a>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Create stunning profile pictures in any style with AI. LinkedIn, anime, goth, and more — all in seconds.
             </p>
           </div>
-          
+
+          {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Product</h4>
+            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/transform" className="text-gray-400 hover:text-white transition">Create</Link></li>
-              <li><Link href="/transform" className="text-gray-400 hover:text-white transition">Styles</Link></li>
-              <li><button onClick={() => scrollToSection("features")} className="text-gray-400 hover:text-white transition">Features</button></li>
-              <li><button onClick={() => scrollToSection("how-it-works")} className="text-gray-400 hover:text-white transition">How It Works</button></li>
+              <li>
+                <Link href="/transform" className="text-gray-400 hover:text-white transition">
+                  Transform Now
+                </Link>
+              </li>
+              <li>
+                <a href="/#how-it-works" className="text-gray-400 hover:text-white transition block">
+                  How it Works
+                </a>
+              </li>
+              <li>
+                <a href="/#styles" className="text-gray-400 hover:text-white transition block">
+                  Styles
+                </a>
+              </li>
+              <li>
+                <a href="/#footer" className="text-gray-400 hover:text-white transition block">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
-          
+
+          {/* Contact */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Support</h4>
+            <h3 className="text-white font-semibold mb-4">Contact</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="mailto:hello@theaibarn.com?subject=Help%20Request" className="text-gray-400 hover:text-white transition">Help Center</a></li>
-              <li><a href="mailto:hello@theaibarn.com" className="text-gray-400 hover:text-white transition">Contact Us</a></li>
-              <li><Link href="/faq" className="text-gray-400 hover:text-white transition">FAQ</Link></li>
+              <li>
+                <a href="mailto:hello@theaibarn.com" className="text-gray-400 hover:text-white transition block">
+                  hello@theaibarn.com
+                </a>
+              </li>
+              <li>
+                <a href="https://discord.gg/your-invite" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition block">
+                  Discord Community
+                </a>
+              </li>
+              <li>
+                <a href="mailto:support@theaibarn.com" className="text-gray-400 hover:text-white transition block">
+                  Support
+                </a>
+              </li>
             </ul>
           </div>
-          
+
+          {/* Legal */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Legal</h4>
+            <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white transition">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-gray-400 hover:text-white transition">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white transition">Cookie Policy</Link></li>
+              <li>
+                <Link href="/privacy" className="text-gray-400 hover:text-white transition">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-400 hover:text-white transition">
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
-        
-        <div className="border-t border-purple-900/20 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm">
-            © 2026 FreePFP.ai. All rights reserved.
-          </p>
-          <p className="text-gray-500 text-sm mt-2 md:mt-0">
-            Questions? <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300 transition">hello@theaibarn.com</a>
-          </p>
+
+        {/* Bottom */}
+        <div className="pt-8 border-t border-purple-900/20 text-center text-sm text-gray-500">
+          <p>© {new Date().getFullYear()} FreePFP.ai — Free AI Profile Picture Generator</p>
+          <p className="mt-2 text-xs">Powered by The AI Barn</p>
         </div>
       </div>
     </footer>
