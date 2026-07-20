@@ -9,7 +9,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /**
  * Image generation endpoint
  * Uses Hugging Face Serverless Inference API with instruct-pix2pix for img2img style transfer.
- * Free tier: hundreds of requests/hour, no credit card required initially.
+ * Free tier: hundreds of requests/hour, no credit card required.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Build style-specific editing instruction prompt
-    // instruct-pix2pix takes natural language instructions to transform the input image
+    // instruct-pix2pix / Kontext takes natural language instructions to transform the input image
     const styleInstructions: Record<string, string> = {
       "linkedin":
-        "Transform this into a professional corporate LinkedIn headshot with clean neutral background, office attire, studio lighting, business portrait",
+        "Transform this into a professional corporate LinkedIn headshot with clean neutral background, office attire, studio lighting, high-end business portrait",
       "alt-goth":
         "Transform this into a dark gothic aesthetic portrait with dramatic makeup, dark moody atmospheric lighting, alternative style, deep shadows, edgy",
       "anime":
@@ -91,26 +91,25 @@ export async function POST(req: NextRequest) {
 
     const fullPrompt = `${styleInstruction}${genderHint}${vibeHint}${paletteHint}`;
 
-    // Decode base64 image to Buffer
-    let imageBuffer: Buffer;
+    // Decode base64 image — strip data URI prefix if present
+    let base64Image: string;
     if (image.startsWith("data:")) {
-      const base64Data = image.split(",")[1];
-      imageBuffer = Buffer.from(base64Data, "base64");
+      base64Image = image.split(",")[1];
     } else {
-      imageBuffer = Buffer.from(image, "base64");
+      base64Image = image;
     }
 
-    // Use instruct-pix2pix: best model for img2img style transfer
-    // It keeps the input image's composition while following the text instruction
+    // Use the HF Inference API for image-to-image
+    // Model: instruct-pix2pix — best for img2img style transfer (keeps composition, applies prompt)
     const HF_MODEL = "timbrooks/instruct-pix2pix";
     const HF_API_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
 
-    // Build request body for image-to-image pipeline
-    // HF API for img2img: base64-encoded image in `inputs.image`, prompt in `inputs.prompt`
-    // Note: the newer image-to-image format accepts JSON with inputs containing both image and prompt
+    // HF image-to-image API spec:
+    // Request: { inputs: base64String, parameters: { prompt, ... } }
+    // Response: raw bytes (the generated image)
     const requestBody = {
       inputs: {
-        image: `data:image/jpeg;base64,${imageBuffer.toString("base64")}`,
+        image: `data:image/jpeg;base64,${base64Image}`,
         prompt: fullPrompt,
       },
       parameters: {
@@ -127,9 +126,10 @@ export async function POST(req: NextRequest) {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          // Wait with backoff: 2s, 4s
-          await sleep(attempt * 2000);
+          await sleep(attempt * 3000);
         }
+
+        console.log(`[HF] Attempt ${attempt + 1}, model: ${HF_MODEL}`);
 
         const response = await fetch(HF_API_URL, {
           method: "POST",
@@ -140,17 +140,17 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify(requestBody),
         });
 
-        // If model is loading (503), wait and retry
+        // Model loading (503) — common for first request
         if (response.status === 503) {
           const data = await response.json().catch(() => ({}));
           const waitTime = (data as any).estimated_time || 30;
-          console.warn(`Model loading, estimated ${waitTime}s (attempt ${attempt + 1})`);
+          console.warn(`[HF] Model loading, estimated ${waitTime}s (attempt ${attempt + 1})`);
           if (attempt < maxRetries) {
-            await sleep(Math.min(waitTime * 1000, 25000));
+            await sleep(Math.min(waitTime * 1000, 30000));
             continue;
           }
           return NextResponse.json(
-            { error: "AI model is warming up. Please try again in a moment." },
+            { error: "AI model is warming up. Please wait 30 seconds and try again." },
             { status: 503 }
           );
         }
@@ -158,9 +158,9 @@ export async function POST(req: NextRequest) {
         // Rate limited
         if (response.status === 429) {
           const retryAfter = parseInt(response.headers.get("retry-after") || "10", 10);
-          console.warn(`Rate limited, waiting ${retryAfter}s`);
+          console.warn(`[HF] Rate limited, waiting ${retryAfter}s`);
           if (attempt < maxRetries) {
-            await sleep(Math.min(retryAfter * 1000, 25000));
+            await sleep(Math.min(retryAfter * 1000, 15000));
             continue;
           }
           return NextResponse.json(
@@ -171,20 +171,27 @@ export async function POST(req: NextRequest) {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`HF API ${response.status}: ${text.slice(0, 200)}`);
+          throw new Error(`HF API ${response.status}: ${text.slice(0, 300)}`);
         }
 
-        // Response is the image bytes (PNG)
-        const imageBlob = await response.blob();
-        if (!imageBlob || imageBlob.size < 100) {
-          throw new Error("Empty image response from model");
+        // Response is the image bytes
+        const contentType = response.headers.get("content-type") || "";
+        console.log(`[HF] Response content-type: ${contentType}, status: ${response.status}`);
+
+        const arrayBuffer = await response.arrayBuffer();
+
+        // Check we got a valid image back
+        if (arrayBuffer.byteLength < 100) {
+          const text = Buffer.from(arrayBuffer).toString("utf-8");
+          throw new Error(`Invalid response (only ${arrayBuffer.byteLength} bytes): ${text.slice(0, 200)}`);
         }
 
         // Convert to base64 data URL
-        const arrayBuffer = await imageBlob.arrayBuffer();
         const base64 = Buffer.from(arrayBuffer).toString("base64");
-        const contentType = imageBlob.type || "image/jpeg";
-        const dataUrl = `data:${contentType};base64,${base64}`;
+        const mimeType = contentType.includes("image/") ? contentType : "image/png";
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+
+        console.log(`[HF] Success! Image generated: ${arrayBuffer.byteLength} bytes`);
 
         return NextResponse.json({
           success: true,
@@ -192,14 +199,15 @@ export async function POST(req: NextRequest) {
         });
       } catch (err: any) {
         lastError = err;
-        // If not a retryable error, bail out
+        console.error(`[HF] Error on attempt ${attempt + 1}:`, err.message);
+        // Don't retry on non-retryable errors
         if (!err.message?.includes("503") && !err.message?.includes("429")) {
           break;
         }
       }
     }
 
-    console.error("Hugging Face API error:", lastError);
+    console.error("[HF] All retries exhausted:", lastError);
     return NextResponse.json(
       { error: `Generation failed: ${lastError?.message || "unknown error"}` },
       { status: 500 }
