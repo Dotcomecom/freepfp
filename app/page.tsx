@@ -13,7 +13,7 @@ export default function Home() {
       {/* Spacer so content sits below fixed header */}
       <div className="h-24 md:h-28" />
 
-      {/* Hero component (includes headline + 3 image boxes) */}
+      {/* Hero component - includes headline, subtitle, and 3 image boxes */}
       <Hero />
 
       {/* Credit purchase banner - below hero images */}
