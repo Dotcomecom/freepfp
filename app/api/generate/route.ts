@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Force Node.js runtime - Replicate SDK doesn't work in Edge
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const { image, style, gender, vibe, palette } = await req.json();
@@ -15,7 +19,7 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.REPLICATE_API_TOKEN;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Image generation not configured. Please add REPLICATE_API_TOKEN to environment variables." },
+        { error: "REPLICATE_API_TOKEN not configured" },
         { status: 500 }
       );
     }
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
       "cottagecore": "cottagecore aesthetic portrait, soft natural lighting, floral, pastoral, vintage dress, dreamy atmosphere",
       "cyberpunk": "cyberpunk portrait, neon lights, futuristic, glowing accents, sci-fi aesthetic, dark background",
       "dark-academia": "dark academia portrait, scholarly aesthetic, moody lighting, vintage clothing, library background, warm tones",
-      "maximalist": "maximalist portrait portrait, bold patterns, vibrant mixing, artistic, layered textures, colorful statement",
+      "maximalist": "maximalist portrait, bold patterns, vibrant mixing, artistic, layered textures, colorful statement",
       "minimalist": "minimalist clean portrait, simple background, elegant, understated, modern aesthetic",
       "vaporwave": "vaporwave aesthetic portrait, pink and purple neon, retro 80s glitch, palm trees, dreamy nostalgia",
     };
@@ -39,7 +43,7 @@ export async function POST(req: NextRequest) {
     const genderPrompts: Record<string, string> = {
       "male": "male subject",
       "female": "female subject",
-      "neutral": "gender neutral subject",
+      "neutral": "person",
     };
 
     const vibePrompts: Record<string, string> = {
@@ -61,82 +65,55 @@ export async function POST(req: NextRequest) {
     };
 
     const stylePrompt = stylePrompts[style] || style;
-    const genderPrompt = genderPrompts[gender] || "";
+    const genderSubject = genderPrompts[gender] || "person";
     const vibePrompt = vibePrompts[vibe] || "";
     const palettePrompt = palettePrompts[palette] || "";
 
-    const fullPrompt = `portrait photo of a ${genderPrompt}, ${stylePrompt}${vibePrompt}, ${palettePrompt}, high quality, detailed, professional photography`;
-    const negativePrompt = "ugly, blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, watermark, text";
+    const fullPrompt = `${genderSubject}, ${stylePrompt}${vibePrompt}, ${palettePrompt}, high quality, detailed, professional photography`;
+    const negativePrompt = "ugly, blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, watermark, text, bad face";
 
-    // Convert base64 image to URL for Replicate
-    // The image comes as a data URL from the client
-    const imageBase64 = image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
+    // SD3.5 accepts data URIs directly for image input (img2img mode)
+    const imageInput = image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
 
     try {
       const Replicate = (await import("replicate")).default;
       const replicate = new Replicate({ auth: apiKey });
 
-      // Use Flux img2img for style transfer - good balance of quality and cost
+      // Use SD 3.5 in img2img mode — accepts an input image + prompt
       const output = await replicate.run(
-        "stability-ai/stable-diffusion-3.5-large" as any,
+        "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc" as any,
         {
           input: {
-            image: imageBase64,
+            image: imageInput,
             prompt: fullPrompt,
             negative_prompt: negativePrompt,
             guidance_scale: 7.5,
-            num_inference_steps: 30,
-            strength: 0.65, // How much to transform (0=keep original, 1=full transform)
+            num_inference_steps: 25,
+            strength: 0.65, // 0 = keep original, 1 = full transform
             width: 768,
             height: 768,
           },
         }
       );
 
-      // Output is typically a URL or array of URLs
+      // Output is URL or array of URLs
       const imageUrl = Array.isArray(output) ? output[0] : output;
+      const urlStr = typeof imageUrl === "string" ? imageUrl : null;
+
+      if (!urlStr) {
+        throw new Error("No image URL returned from model");
+      }
 
       return NextResponse.json({
         success: true,
-        imageUrl: typeof imageUrl === "string" ? imageUrl : null,
+        imageUrl: urlStr,
       });
     } catch (replicateError: any) {
       console.error("Replicate error:", replicateError);
-      
-      // Fallback: try a different model if the first one fails
-      try {
-        const Replicate = (await import("replicate")).default;
-        const replicate = new Replicate({ auth: apiKey });
-
-        const output = await replicate.run(
-          "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc" as any,
-          {
-            input: {
-              image: imageBase64,
-              prompt: fullPrompt,
-              negative_prompt: negativePrompt,
-              guidance_scale: 7.5,
-              num_inference_steps: 25,
-              strength: 0.65,
-              width: 768,
-              height: 768,
-            },
-          }
-        );
-
-        const imageUrl = Array.isArray(output) ? output[0] : output;
-
-        return NextResponse.json({
-          success: true,
-          imageUrl: typeof imageUrl === "string" ? imageUrl : null,
-        });
-      } catch (fallbackError: any) {
-        console.error("Fallback model error:", fallbackError);
-        return NextResponse.json(
-          { error: "Image generation failed. Please try again." },
-          { status: 500 }
-        );
-      }
+      return NextResponse.json(
+        { error: `Generation failed: ${replicateError.message || "unknown error"}` },
+        { status: 500 }
+      );
     }
   } catch (error: any) {
     console.error("Generate API error:", error);

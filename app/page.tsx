@@ -13,21 +13,7 @@ export default function Home() {
       {/* Spacer so content sits below fixed header */}
       <div className="h-24 md:h-28" />
 
-      {/* Hero headline */}
-      <div className="container mx-auto px-6 pb-4 text-center">
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
-          LinkedIn, Goth, Anime, Cyberpunk, Vaporwave
-          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> &amp; 7 More Styles</span>
-        </h1>
-        <p className="text-lg text-gray-400 mb-2">
-          Upload a photo, pick your aesthetic, and generate a stunning AI profile picture in seconds.
-        </p>
-        <p className="text-sm text-gray-500 mb-2">
-          12 styles: LinkedIn, Goth, Anime, Fairycore, Grunge, Indie Sleaze, Cottagecore, Cyberpunk, Dark Academia, Maximalist, Minimalist, Vaporwave
-        </p>
-      </div>
-
-      {/* 3 image boxes - ONE image per box */}
+      {/* Hero component (includes headline + 3 image boxes) */}
       <Hero />
 
       {/* Credit purchase banner - below hero images */}
