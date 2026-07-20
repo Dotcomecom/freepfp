@@ -36,17 +36,16 @@ export default function Hero() {
   return (
     <section className="relative pb-8 overflow-hidden">
       <div className="container mx-auto px-6 text-center">
-        {/* Hero headline */}
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
-          LinkedIn, Goth, Anime, Cyberpunk, Vaporwave
-          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> &amp; 7 More Styles</span>
-        </h1>
-        <p className="text-lg text-gray-400 mb-2">
-          Upload a photo, pick your aesthetic, and generate a stunning AI profile picture in seconds.
-        </p>
-        <p className="text-sm text-gray-500 mb-2">
-          12 styles: {allStyles.join(', ')}
-        </p>
+        {/* Hero subtitle (not h1 - the main h1 is in the showcase below) */}
+        <div className="mb-6">
+          <p className="text-xl md:text-2xl text-purple-300 mb-2 font-medium">
+            LinkedIn, Goth, Anime, Cyberpunk, Vaporwave
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> &amp; 7 More Styles</span>
+          </p>
+          <p className="text-base text-gray-400">
+            Upload a photo, pick your aesthetic, and generate a stunning AI profile picture in seconds.
+          </p>
+        </div>
 
         {/* Main showcase */}
         <div className="max-w-6xl mx-auto text-center mb-12 py-8">
