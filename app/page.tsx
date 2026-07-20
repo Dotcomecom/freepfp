@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
@@ -5,6 +6,15 @@ import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import AdSenseAd from "@/components/AdSenseAd";
+
+export const metadata: Metadata = {
+  title: "FreePFP.ai - Free AI Profile Picture Generator | LinkedIn Headshots, Anime Avatars & 12+ Styles",
+  description:
+    "Free AI profile picture generator using InstantID face-preserving technology. Transform your photo into professional LinkedIn headshots, anime avatars, goth, cyberpunk, vaporwave & more. 1 free transformation per day. No credit card required. Created by The AI Barn.",
+  alternates: {
+    canonical: "https://freepfp.ai",
+  },
+};
 
 export default function Home() {
   return (
@@ -34,7 +44,7 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>1 Free Per Day</span>
+                <span>1 Free Profile Picture Per Day</span>
               </span>
             </Link>
 

@@ -1,0 +1,59 @@
+# FreePFP.ai
+
+> FreePFP.ai is a free AI-powered profile picture generator that transforms uploaded photos into professional LinkedIn headshots, anime avatars, and 12+ artistic styles using face-preserving InstantID technology.
+
+## What is FreePFP.ai?
+
+FreePFP.ai is a web-based AI tool that generates profile pictures from user-uploaded photos. Users choose from 12+ unique styles — including LinkedIn Professional, Anime, Alt/Goth, Cyberpunk, Fairycore, Cottagecore, Vaporwave, Dark Academia, Old Money, Grunge, Indie Sleaze, and Fantasy — and the AI produces a stylized portrait in seconds while preserving the user's facial identity.
+
+## Key Facts
+
+- **Price**: Free (1 transformation per day). Credit packs available from $7.99 (100 credits) to $79.99 (1,000 credits).
+- **Technology**: Built on InstantID face-preserving AI via Replicate.
+- **Styles**: 12 unique styles spanning professional, artistic, and alternative aesthetics.
+- **Privacy**: Photos are not stored. Processing occurs in real-time via Replicate and is not persisted on FreePFP.ai servers.
+- **Signup**: Basic account required for generation. No credit card needed for the daily free transformation.
+- **Output**: High-resolution images suitable for LinkedIn, Instagram, Discord, X, and other platforms.
+- **Built by**: The AI Barn (theaibarn.com)
+- **Contact**: hello@theaibarn.com
+- **URL**: https://freepfp.ai
+
+## Available Styles
+
+| Style | Description |
+|-------|-------------|
+| LinkedIn Professional | Corporate headshot with clean background and soft studio lighting |
+| Alt / Goth | Dark alternative aesthetic with moody lighting |
+| Anime | Japanese animation / cel-shaded style |
+| Fairycore | Whimsical fairy aesthetic with soft pastels |
+| Cyberpunk | Neon-lit futuristic sci-fi look |
+| Cottagecore | Rustic pastoral charm with natural lighting |
+| Indie Sleaze | 2000s indie rock grainy film aesthetic |
+| Dark Academia | Moody literary / scholarly vintage style |
+| Vaporwave | 80s retro with pastels and glitch effects |
+| Old Money | Classic wealthy aesthetic with timeless elegance |
+| Grunge | 90s rock and roll edgy texture |
+| Fantasy | Mythical character art with dramatic lighting |
+
+## How It Works
+
+1. Upload a clear, front-facing photo (selfie or portrait works best)
+2. Select one of 12+ styles and optional mood/palette settings
+3. The AI generates a stylized profile picture in ~15-30 seconds
+4. Download the high-resolution result
+
+## Technical Details
+
+- **Face-Preserving AI**: Uses InstantID (zsxkib/instant-id on Replicate) which maintains facial identity during style transfer
+- **No Photo Storage**: Uploaded images are processed in real-time and discarded after generation
+- **Daily Reset**: Free credits reset at midnight UTC each day
+- **Platform**: Web application, no download required
+
+## Links
+
+- [Homepage](https://freepfp.ai)
+- [Transform / Generator](https://freepfp.ai/transform)
+- [FAQ](https://freepfp.ai/faq)
+- [About](https://freepfp.ai/about)
+- [Privacy Policy](https://freepfp.ai/privacy)
+- [Terms of Service](https://freepfp.ai/terms)

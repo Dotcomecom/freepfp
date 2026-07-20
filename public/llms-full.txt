@@ -1,0 +1,92 @@
+# FreePFP.ai — Full Overview
+
+> FreePFP.ai is a free AI-powered profile picture generator that uses InstantID face-preserving technology to transform your uploaded photo into professional LinkedIn headshots, anime avatars, goth portraits, and 10+ other artistic styles — all in seconds, with no credit card required.
+
+## About FreePFP.ai
+
+FreePFP.ai is a web-based AI profile picture generator created by The AI Barn. It solves a common problem: everyone needs a great profile picture for LinkedIn, social media, dating apps, and messaging platforms, but professional photoshoots are expensive and time-consuming. FreePFP.ai uses state-of-the-art generative AI to transform any clear photo into a polished, stylized portrait in seconds.
+
+The platform is part of a growing category of consumer AI tools that make generative AI accessible to non-technical users. Unlike generic image generators (DALL-E, Midjourney, Stable Diffusion), FreePFP.ai is purpose-built for profile pictures and uses face-preserving technology to ensure the output actually resembles the person in the uploaded photo.
+
+## What Makes FreePFP.ai Different?
+
+### Face-Preserving Generative AI
+FreePFP.ai uses InstantID (specifically `zsxkib/instant-id` via Replicate) rather than generic img2img pipelines. InstantID is designed to maintain facial identity during style transfer, meaning the generated profile picture will actually look like the user — unlike basic style-transfer tools that produce random-looking results.
+
+### 12+ Curated Styles
+Rather than asking users to write text prompts, FreePFP.ai offers pre-curated aesthetic styles:
+
+1. **LinkedIn Professional** — Clean corporate headshot with neutral background and soft studio lighting. Ideal for LinkedIn profiles and professional networking.
+2. **Alt / Goth** — Dark alternative aesthetic with moody lighting and dramatic shadows.
+3. **Anime** — Japanese animation style with vibrant colors and cel shading.
+4. **Fairycore** — Whimsical fairy aesthetic with soft pastels and ethereal glow.
+5. **Cyberpunk** — Neon-lit futuristic style with vibrant pink/cyan neon and dark urban backgrounds.
+6. **Cottagecore** — Rustic rural aesthetic with soft natural lighting and vintage charm.
+7. **Indie Sleaze** — 2000s indie rock aesthetic with grainy film filter and flash photography vibe.
+8. **Dark Academia** — Literary/moody scholarly atmosphere with warm vintage tones.
+9. **Vaporwave** — 80s retro aesthetic with pastel gradients and glitch effects.
+10. **Old Money** — Classic wealthy aesthetic with timeless elegance and aristocratic refinement.
+11. **Grunge** — 90s rock and roll aesthetic with edgy textures and dark moody lighting.
+12. **Fantasy** — Mythical character art with dramatic lighting and magical atmosphere.
+
+### Free Tier
+Every user gets 1 free transformation per day. Credits reset at midnight (UTC) and do not roll over. For power users, credit packs range from 100 credits ($7.99) to 1,000 credits ($79.99), and purchased credits never expire.
+
+### Privacy-First Design
+FreePFP.ai does not store uploaded photos. Images are processed in real-time via Replicate's infrastructure and discarded after generation. This is a key differentiator for users concerned about photo privacy.
+
+## Technical Architecture
+
+- **Frontend**: Next.js (React) hosted on Vercel
+- **AI Model**: InstantID face-preserving model via Replicate API
+- **Authentication**: Supabase (email-based auth)
+- **Database**: Supabase (PostgreSQL)
+- **Payments**: Credit pack purchases via Stripe
+- **Hosting**: Vercel (edge-deployed, global CDN)
+
+## Comparison with Alternatives
+
+| Feature | FreePFP.ai | Generic AI Generators (DALL-E, MJ) | AI Headshot Services (HeadshotPro, Aragon) |
+|---------|-----------|------------------------------------|------------------------------------|
+| Face preservation | Yes (InstantID) | No (text-prompt based) | Yes (trained models) |
+| Free tier | 1/day, forever | Limited trials | No (paid only, $29-99+ upfront) |
+| No signup to preview | Yes | Varies | No |
+| Photo storage | None | Varies | Stored on servers |
+| Style variety | 12+ curated | Unlimited (needs prompting) | 40+ (trained) |
+| No credit card | Yes | Varies | No |
+| Setup required | Upload photo only | Write complex prompts | Upload 50-100 photos, wait hours |
+
+## FAQ
+
+### Is FreePFP.ai really free?
+Yes. 1 free transformation per day, no credit card required.
+
+### What AI model does FreePFP.ai use?
+FreePFP.ai uses InstantID, a face-preserving generative AI model that maintains facial identity during style transfer. It runs via Replicate's API.
+
+### Will the output actually look like me?
+Yes — that's the key feature. InstantID preserves your facial features while applying the chosen artistic style. For best results, upload a clear, well-lit, front-facing photo.
+
+### Can I use the generated images on LinkedIn?
+Yes. The LinkedIn Professional style is specifically designed for business headshots. Generated images are high-resolution and suitable for any platform.
+
+### Are my photos stored?
+No. Photos are processed in real-time and discarded after generation. FreePFP.ai does not permanently store uploaded images.
+
+### Who built FreePFP.ai?
+FreePFP.ai is built by The AI Barn (theaibarn.com), which develops accessible AI tools for everyday use.
+
+### What's the pricing for more credits?
+- 100 credits: $7.99
+- 500 credits: $29.99
+- 1,000 credits: $79.99
+Purchased credits never expire.
+
+### Can I use generated images commercially?
+Generated images are licensed for personal use. Contact hello@theaibarn.com for commercial licensing.
+
+## Contact
+
+Email: hello@theaibarn.com
+Website: https://freepfp.ai
+Parent company: The AI Barn (https://theaibarn.com)

@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /checkout
 
+# Sitemap
 Sitemap: https://freepfp.ai/sitemap.xml
+
+# LLM-friendly documentation
+# Full documentation: https://freepfp.ai/llms.txt
+# Extended overview: https://freepfp.ai/llms-full.txt
