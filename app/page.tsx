@@ -17,7 +17,7 @@ export default function Home() {
       <Hero />
 
       {/* Credit purchase banner - below hero images */}
-      <section id="pricing" className="py-6">
+      <section id="pricing" className="py-6 scroll-mt-32">
         <div className="container mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 border border-purple-500/20 rounded-2xl p-4">
             <Link

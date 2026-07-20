@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Features() {
   const features = [
     {
@@ -23,7 +25,7 @@ export default function Features() {
     {
       title: "High-Quality Output",
       description: "Download high-resolution images ready for any platform",
-      icon: "📸"
+      icon: ""
     },
     {
       title: "Instant Results",
@@ -33,7 +35,7 @@ export default function Features() {
   ];
 
   return (
-    <section id="features" className="py-20 bg-gradient-to-b from-[#0a0a0a] to-[#1a0a1f] scroll-mt-20">
+    <section id="features" className="py-20 bg-gradient-to-b from-[#0a0a0a] to-[#1a0a1f] scroll-mt-32">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">

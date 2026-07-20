@@ -1,76 +1,80 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-
 export default function FAQPage() {
   const faqs = [
     {
-      q: "How does FreePFP.ai work?",
-      a: "Upload a clear photo of yourself, choose your preferred style (LinkedIn, Goth, Anime, Cyberpunk, and more), and our AI transforms your photo in seconds. You can also customize gender presentation, vibe, and color palette."
+      question: "Is FreePFP.ai really free?",
+      answer: "Yes! Every registered user gets 1 free transformation per day — no credit card required. If you want more, you can purchase credit packs."
     },
     {
-      q: "Is it really free?",
-      a: "Yes! You get 1 free transformation every day, no payment required. If you need more, credit packs start at $7.99 for 100 credits."
+      question: "How do the daily credits work?",
+      answer: "Each day at midnight (UTC) your account is topped up to 1 free credit. Unused credits don't roll over — use it or lose it! Credit packs you purchase never expire."
     },
     {
-      q: "What photo should I upload?",
-      a: "Any clear photo of yourself works great — selfies, LinkedIn headshots, or casual photos. The better the quality and lighting of your original photo, the better the result."
+      question: "What styles are available?",
+      answer: "We currently offer 12 unique styles including LinkedIn Professional, Alt/Goth, Anime, Fairycore, Cyberpunk, Cottagecore, and more. New styles are added regularly."
     },
     {
-      q: "What styles are available?",
-      a: "We offer 12 unique styles including LinkedIn Professional, Alt/Goth, Anime, Cyberpunk, Vaporwave, Fairycore, Cottagecore, Dark Academia, Indie Sleaze, and more."
+      question: "Will the output look like me?",
+      answer: "Our AI uses advanced face-preserving technology (InstantID) to maintain your facial identity while applying the chosen style transformation. Upload a clear, well-lit photo for best results."
     },
     {
-      q: "Can I use the generated images for my LinkedIn or social media?",
-      a: "Absolutely! All generated images are yours to use on any platform — LinkedIn, Twitter, Instagram, Discord, gaming profiles, etc."
+      question: "What photo works best?",
+      answer: "Upload a clear, front-facing photo with good lighting. Selfies, passport-style photos, and casual shots all work well. Avoid blurry, extreme-angle, or heavily-filtered images."
     },
     {
-      q: "How is my data handled?",
-      a: "Your uploaded photos are processed securely and used only to generate your image. We don't store your photos long-term or share them with third parties. See our Privacy Policy for details."
+      question: "Can I use the generated images commercially?",
+      answer: "Generated images are for personal use. For commercial licensing inquiries, contact us at hello@theaibarn.com."
     },
     {
-      q: "What if I'm not happy with the result?",
-      a: "Try generating again with a different style, vibe, or palette. Each generation can produce different results. If you run out of free daily credits, you can always grab a credit pack."
+      question: "How do I get more credits?",
+      answer: "Purchase a credit pack from the pricing section on the homepage, or simply wait for your free daily credit to refresh. Packs range from 100 credits ($7.99) to 1,000 credits ($79.99)."
     },
     {
-      q: "Who do I contact for help?",
-      a: "Email us at hello@theaibarn.com and we'll get back to you as soon as possible."
-    }
+      question: "Is my photo stored?",
+      answer: "Uploaded photos are sent to our AI processing partner (Replicate) for transformation and are not stored on our servers. Generated images are available for you to download immediately."
+    },
   ];
 
   return (
     <main className="min-h-screen">
-      <Header />
+      {/* Fixed header spacer */}
       <div className="h-24 md:h-28" />
-      
+
       <section className="py-20">
         <div className="container mx-auto px-6 max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
             Frequently Asked <span className="gradient-text">Questions</span>
           </h1>
-          <p className="text-gray-400 text-center mb-12 text-lg">
+          <p className="text-xl text-gray-400 text-center mb-16">
             Everything you need to know about FreePFP.ai
           </p>
 
           <div className="space-y-6">
-            {faqs.map((faq, i) => (
-              <div key={i} className="bg-purple-900/20 border border-purple-800/30 rounded-2xl p-6">
-                <h3 className="text-xl font-bold text-white mb-3">{faq.q}</h3>
-                <p className="text-gray-400">{faq.a}</p>
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="bg-purple-900/20 border border-purple-800/30 rounded-2xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {faq.question}
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  {faq.answer}
+                </p>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-16">
             <p className="text-gray-400 mb-4">Still have questions?</p>
-            <a href="mailto:hello@theaibarn.com" className="inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-semibold">
+            <a
+              href="mailto:hello@theaibarn.com"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-medium"
+            >
               Contact Us
             </a>
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }
