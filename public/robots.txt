@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
-User-agent: Mediapartners-Google
-Allow: /
-User-agent: AdsBot-Google
-Allow: /
 
 Sitemap: https://freepfp.ai/sitemap.xml
