@@ -3,26 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
 /**
  * Image generation with IDENTITY PRESERVATION
- * Uses InstantID (zsxkib/instant-id) which preserves the input person's face
- * while applying the requested style/aesthetic.
+ * Uses InstantID (zsxkib/instant-id) with direct REST API calls
  */
 export async function POST(req: NextRequest) {
-  let Replicate: any;
-  try {
-    const mod = await import("replicate");
-    Replicate = mod.default;
-  } catch (e) {
-    console.error("Failed to import replicate:", e);
-    return NextResponse.json(
-      { error: "Server configuration error — Replicate SDK missing" },
-      { status: 500 }
-    );
-  }
-
   try {
     const { image, style, gender, vibe, palette } = await req.json();
 
@@ -41,33 +26,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Build style prompts — InstantID prompts work best when they describe
-    // the portrait setup / aesthetic clearly
+    // Style prompts optimized for identity preservation
     const stylePrompts: Record<string, string> = {
-      "linkedin":
-        "professional corporate LinkedIn headshot, wearing office attire, clean neutral light grey background, soft studio lighting, sharp focus, high-end business portrait, photorealistic",
-      "alt-goth":
-        "dark gothic portrait, dramatic moody lighting, deep shadows, edgy alternative style, dark background, atmospheric, dramatic shadows, photorealistic",
-      "anime":
-        "anime style portrait illustration, vibrant colors, cel-shaded, Japanese animation style, expressive large eyes, clean linework, high quality anime art, Studio Ghibli quality",
-      "fairycore":
-        "ethereal fairycore portrait, flowers in hair, soft pastel colors, magical woodland lighting, dreamy bokeh, fantasy glow, whimsical enchanting",
-      "grunge":
-        "90s grunge portrait, edgy raw energy, film grain texture, alternative fashion, moody shadows, vintage film feel, photorealistic",
-      "indie-sleaze":
-        "2008 indie sleaze portrait, harsh flash photography, artsy retro, slightly messy cool, Tumblr aesthetic, photorealistic",
-      "cottagecore":
-        "cottagecore portrait, soft golden hour natural lighting, floral meadow setting, pastoral dreamy, vintage soft tones, warm",
-      "cyberpunk":
-        "cyberpunk portrait, neon lights reflecting on face, futuristic, glowing neon blue and pink accents, sci-fi, dark background, photorealistic",
-      "dark-academia":
-        "dark academia portrait, moody warm lighting, scholarly aesthetic, vintage clothing, old library background, amber cinematic tones",
-      "maximalist":
-        "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
-      "minimalist":
-        "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
-      "vaporwave":
-        "vaporwave portrait, pink and purple neon glow, retro 80s, dreamy nostalgic haze, synthwave aesthetic, artistic",
+      "linkedin": "professional corporate LinkedIn headshot, wearing office attire, clean neutral light grey background, soft studio lighting, sharp focus, high-end business portrait, photorealistic, 8k",
+      "alt-goth": "dark gothic portrait, dramatic moody lighting, deep shadows, edgy alternative style, dark background, atmospheric, photorealistic, 8k",
+      "anime": "anime style portrait illustration, vibrant colors, cel-shaded, Japanese animation style, expressive large eyes, clean linework, high quality anime art",
+      "fairycore": "ethereal fairycore portrait, flowers in hair, soft pastel colors, magical woodland lighting, dreamy bokeh, fantasy glow, whimsical",
+      "grunge": "90s grunge portrait, edgy raw energy, film grain texture, alternative fashion, moody shadows, vintage film, photorealistic",
+      "indie-sleaze": "2008 indie sleaze portrait, harsh flash photography, artsy retro, slightly messy cool, Tumblr aesthetic, photorealistic",
+      "cottagecore": "cottagecore portrait, soft golden hour natural lighting, floral meadow setting, pastoral dreamy, vintage soft tones, warm",
+      "cyberpunk": "cyberpunk portrait, neon lights reflecting on face, futuristic, glowing neon blue and pink accents, sci-fi, dark background, photorealistic",
+      "dark-academia": "dark academia portrait, moody warm lighting, scholarly aesthetic, vintage clothing, old library background, amber cinematic tones",
+      "maximalist": "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
+      "minimalist": "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
+      "vaporwave": "vaporwave portrait, pink and purple neon glow, retro 80s, dreamy nostalgic haze, synthwave aesthetic, artistic",
     };
 
     const genderHints: Record<string, string> = {
@@ -76,151 +48,120 @@ export async function POST(req: NextRequest) {
       neutral: "",
     };
 
-    const vibeHints: Record<string, string> = {
-      dreamy: "dreamy, soft-focus, ethereal",
-      edgy: "edgy, high-contrast, dramatic",
-      soft: "soft, gentle, warm",
-      bold: "bold, striking, commanding presence",
-      mysterious: "mysterious, atmospheric, cinematic",
-      playful: "playful, lighthearted, vibrant",
-    };
-
-    const paletteHints: Record<string, string> = {
-      warm: "warm golden hour tones",
-      cool: "cool blue undertones",
-      pastel: "muted soft pastel colors",
-      vibrant: "highly saturated vivid colors",
-      monochrome: "black and white monochrome",
-      neon: "bright neon electric glowing colors",
-    };
-
     const basePrompt = stylePrompts[style] || stylePrompts["linkedin"];
     const genderPart = genderHints[gender] || "";
-    const vibePart = vibeHints[vibe] || "";
-    const palettePart = paletteHints[palette] || "";
-
-    // InstantID prompt: describes the person + desired aesthetic
+    
+    // InstantID needs a strong descriptive prompt
     const fullPrompt = [
       "a portrait of a person,",
       genderPart,
       basePrompt,
-      vibePart,
-      palettePart,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    ].filter(Boolean).join(" ");
 
-    const negativePrompt =
-      "blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, mutation, ugly, text, watermark, cartoon, illustration (unless anime style)";
-
-    // Decode base64 image — strip data URI prefix if present
-    let imageData: string;
-    if (image.startsWith("data:")) {
-      imageData = image;
-    } else {
-      imageData = `data:image/jpeg;base64,${image}`;
+    // Strip data URI prefix if present for Replicate
+    let imageUrl: string = image;
+    if (!image.startsWith("http")) {
+      // Keep as data URI - Replicate accepts it
+      imageUrl = image;
     }
 
-    console.log(
-      `[InstantID] Style: ${style}, prompt length: ${fullPrompt.length}, image size: ${(imageData.length / 1024).toFixed(0)}KB`
-    );
+    console.log(`[InstantID] Style: ${style}, prompt: ${fullPrompt.slice(0, 100)}...`);
 
-    const replicate = new Replicate({ auth: apiKey });
-
-    // Retry logic for rate limits
-    const maxRetries = 3;
-    let lastError: any = null;
-
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        if (attempt > 0) {
-          const waitTime = attempt * 12000;
-          console.log(`[InstantID] Retry ${attempt}, waiting ${waitTime}ms`);
-          await sleep(waitTime);
+    // Call Replicate API directly with version hash via REST
+    const VERSION = "2e4785a4d80dadf580077b2244c8d7c05d8e3faac04a04c02d8e099dd2876789";
+    
+    // Step 1: Create prediction
+    const createResponse = await fetch("https://api.replicate.com/v1/predictions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Token ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        version: VERSION,
+        input: {
+          image: imageUrl,
+          prompt: fullPrompt,
+          negative_prompt: "blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, mutation, ugly, text, watermark",
+          num_inference_steps: 30,
+          guidance_scale: 5,
+          width: 768,
+          height: 768,
         }
+      }),
+    });
 
-        console.log(`[InstantID] Attempt ${attempt + 1}/${maxRetries + 1}`);
+    if (!createResponse.ok) {
+      const errorText = await createResponse.text();
+      console.error("[InstantID] Create failed:", createResponse.status, errorText);
+      return NextResponse.json(
+        { error: `Generation failed: ${errorText}` },
+        { status: 500 }
+      );
+    }
 
-        // Use InstantID — identity-preserving generation
-        const output = await replicate.run(
-          "zsxkib/instant-id",
-          {
-            input: {
-              image: imageData,
-              prompt: fullPrompt,
-              negative_prompt: negativePrompt,
-              num_inference_steps: 30,
-              guidance_scale: 5,
-              width: 768,
-              height: 768,
-              apply_style: true,
-              positive_conditioning_scale: 1.0,
-            },
-          }
+    const prediction = await createResponse.json();
+    console.log(`[InstantID] Prediction created: ${prediction.id}, status: ${prediction.status}`);
+
+    // Step 2: Poll for completion
+    const predictionId = prediction.id;
+    let result = prediction;
+    let attempts = 0;
+    const maxAttempts = 60; // 60 * 2s = 120s max wait
+
+    while (result.status !== "succeeded" && result.status !== "failed" && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      attempts++;
+
+      const pollResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+        headers: {
+          "Authorization": `Token ${apiKey}`,
+        },
+      });
+
+      if (!pollResponse.ok) {
+        const errorText = await pollResponse.text();
+        console.error("[InstantID] Poll failed:", pollResponse.status, errorText);
+        return NextResponse.json(
+          { error: `Polling failed: ${errorText}` },
+          { status: 500 }
         );
-
-        console.log(`[InstantID] Output type: ${typeof output}, isArray: ${Array.isArray(output)}`);
-
-        // Output is an array of URLs (same as SDXL)
-        if (Array.isArray(output) && output.length > 0) {
-          const imageUrl = output[0];
-          console.log(`[InstantID] Success! Image URL: ${imageUrl?.slice(0, 80)}...`);
-
-          return NextResponse.json({
-            success: true,
-            imageUrl: imageUrl,
-          });
-        } else if (typeof output === "string") {
-          console.log(`[InstantID] Success (string output)! URL: ${output.slice(0, 80)}...`);
-          return NextResponse.json({
-            success: true,
-            imageUrl: output,
-          });
-        } else {
-          throw new Error(`Unexpected output format: ${JSON.stringify(output).slice(0, 200)}`);
-        }
-      } catch (err: any) {
-        lastError = err;
-        const msg = err?.message || String(err);
-        console.error(`[InstantID] Attempt ${attempt + 1} failed:`, msg.slice(0, 300));
-
-        // Rate limit — retry
-        if (msg.includes("429") || msg.includes("throttl") || msg.includes("rate limit")) {
-          console.log(`[InstantID] Rate limited, will retry...`);
-          continue;
-        }
-
-        // Model loading / cold start
-        if (msg.includes("503") || msg.includes("loading")) {
-          console.log(`[InstantID] Model loading, will retry...`);
-          await sleep(20000);
-          continue;
-        }
-
-        // Non-retryable — break
-        break;
       }
+
+      result = await pollResponse.json();
+      console.log(`[InstantID] Poll ${attempts}: status=${result.status}`);
     }
 
-    throw lastError || new Error("All retry attempts exhausted");
+    if (result.status === "failed") {
+      return NextResponse.json(
+        { error: `Generation failed: ${result.error || "Unknown error"}` },
+        { status: 500 }
+      );
+    }
+
+    if (!result.output) {
+      return NextResponse.json(
+        { error: "No output generated" },
+        { status: 500 }
+      );
+    }
+
+    // Output is an array of image URLs
+    const outputUrl = Array.isArray(result.output) ? result.output[0] : result.output;
+    
+    console.log(`[InstantID] Success! Output URL: ${outputUrl}`);
+
+    return NextResponse.json({
+      success: true,
+      imageUrl: outputUrl,
+    });
+
   } catch (err: any) {
     const msg = err?.message || String(err);
-    console.error("[InstantID] Final error:", msg.slice(0, 500));
-
-    if (msg.includes("429") || msg.includes("throttl")) {
-      return NextResponse.json(
-        { error: "Service is busy right now. Please wait 30 seconds and try again." },
-        { status: 429 }
-      );
-    }
-    if (msg.includes("402")) {
-      return NextResponse.json(
-        { error: "Service credits exhausted. Please contact support." },
-        { status: 402 }
-      );
-    }
+    console.error("[InstantID] Fatal error:", msg);
+    
     return NextResponse.json(
-      { error: `Generation failed: ${msg.slice(0, 400)}` },
+      { error: `Generation failed: ${msg}` },
       { status: 500 }
     );
   }
