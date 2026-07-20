@@ -34,7 +34,7 @@ const badgeColors = [
 
 export default function Hero() {
   return (
-    <section className="relative pb-8 overflow-hidden">
+    <section id="styles" className="relative pb-8 overflow-hidden scroll-mt-32">
       <div className="container mx-auto px-6 text-center">
         {/* Hero subtitle (not h1 - the main h1 is in the showcase below) */}
         <div className="mb-6">
