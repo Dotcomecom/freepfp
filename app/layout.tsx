@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Transform your LinkedIn photo into stunning AI-generated profile pictures. Free daily credits, no signup required to start.",
   keywords: ["AI profile picture", "free pfp", "LinkedIn photo", "AI headshot", "profile picture generator"],
   other: {
-    "google-adsense-account": "ca-pub-XXXXXXXXXXXXXXXX",
+    "google-adsense-account": "ca-pub-2378599294878032",
   },
 };
 
@@ -20,14 +20,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || "ca-pub-XXXXXXXXXXXXXXXX";
-
   return (
     <html lang="en">
       <head>
         <Script
           async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2378599294878032"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
