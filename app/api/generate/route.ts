@@ -32,14 +32,14 @@ export async function POST(req: NextRequest) {
       "alt-goth": "dark gothic aesthetic portrait, dramatic makeup, dark clothing, moody atmospheric lighting, alternative style, deep shadows",
       "anime": "anime style portrait illustration, vibrant colors, cel-shaded, Japanese animation aesthetic, clean linework, expressive eyes",
       "fairycore": "fairycore aesthetic portrait, ethereal glow, flowers in hair, soft pastel colors, magical woodland lighting, dreamy bokeh",
-      "grunge": "90s grunge aesthetic portrait, edgy raw energy, film grain texture, alternative fashion, moody shadows, Kurt Cobain era",
+      "grunge": "90s grunge aesthetic portrait, edgy raw energy, film grain texture, alternative fashion, moody shadows",
       "indie-sleaze": "indie sleaze aesthetic portrait, 2008 tumblr aesthetic, harsh flash photography, artsy retro cool, slightly messy",
       "cottagecore": "cottagecore aesthetic portrait, soft natural golden lighting, floral, pastoral setting, vintage dress, dreamy atmosphere, meadow",
-      "cyberpunk": "cyberpunk portrait, neon lights reflecting on face, futuristic, glowing accents, sci-fi aesthetic, dark rainy background, blade runner",
-      "dark-academia": "dark academia portrait, scholarly aesthetic, moody warm lighting, vintage clothing, old library background, warm amber tones, tweed",
-      "maximalist": "maximalist portrait, bold patterns, vibrant color mixing, artistic, layered textures, colorful statement fashion, eclectic",
-      "minimalist": "minimalist clean portrait, simple pure background, elegant understated, modern aesthetic, soft even lighting, contemporary",
-      "vaporwave": "vaporwave aesthetic portrait, pink and purple neon glow, retro 80s glitch, palm tree silhouettes, dreamy nostalgic haze, grid",
+      "cyberpunk": "cyberpunk portrait, neon lights reflecting on face, futuristic, glowing accents, sci-fi aesthetic, dark rainy background",
+      "dark-academia": "dark academia portrait, scholarly aesthetic, moody warm lighting, vintage clothing, old library background, warm amber tones",
+      "maximalist": "maximalist portrait, bold patterns, vibrant color mixing, artistic, layered textures, colorful statement fashion",
+      "minimalist": "minimalist clean portrait, simple pure background, elegant understated, modern aesthetic, soft even lighting",
+      "vaporwave": "vaporwave aesthetic portrait, pink and purple neon glow, retro 80s vibe, dreamy nostalgic haze",
     };
 
     const genderPrompts: Record<string, string> = {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     const palettePrompts: Record<string, string> = {
       "warm": ", warm color palette golden hour tones",
-      "cool": ", cool color palette blue tones icy",
+      "cool": ", cool color palette blue tones",
       "pastel": ", pastel color palette muted soft candy colors",
       "vibrant": ", vibrant highly saturated colors",
       "monochrome": ", monochrome black and white tones",
@@ -92,19 +92,18 @@ export async function POST(req: NextRequest) {
             await sleep(attempt * 3000);
           }
 
-          // Use SDXL img2img — accepts an input image + prompt
+          // Use stable-diffusion-img2img which accepts image input
           const output = await replicate.run(
-            "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96c929f9bdc" as any,
+            "stability-ai/stable-diffusion-img2img" as any,
             {
               input: {
                 image: imageInput,
                 prompt: fullPrompt,
                 negative_prompt: negativePrompt,
                 guidance_scale: 7.5,
-                num_inference_steps: 30,
-                prompt_strength: 0.65, // 0 = keep original, 1 = full transform
-                width: 768,
-                height: 768,
+                num_inference_steps: 50,
+                prompt_strength: 0.7, // 0 = keep original, 1 = full transform
+                num_outputs: 1,
               },
             }
           );
@@ -140,7 +139,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: isRateLimit
-            ? "Service is busy right now — please wait 10 seconds and try again. (Free tier rate limit)"
+            ? "Service is busy right now. Please wait 10 seconds and try again."
             : `Generation failed: ${lastError?.message || "unknown error"}`,
         },
         { status: isRateLimit ? 503 : 500 }
@@ -154,7 +153,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: isRateLimit
-            ? "Service is busy right now — please wait 10 seconds and try again. (Free tier rate limit)"
+            ? "Service is busy right now. Please wait 10 seconds and try again."
             : `Generation failed: ${replicateError.message || "unknown error"}`,
         },
         { status: isRateLimit ? 503 : 500 }
