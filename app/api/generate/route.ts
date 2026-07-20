@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Force Node.js runtime for fetch multipart support
+// Force Node.js runtime
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
@@ -9,7 +9,15 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /**
  * Image generation endpoint
  * Uses Hugging Face Serverless Inference API with instruct-pix2pix for img2img style transfer.
- * Free tier: hundreds of requests/hour, no credit card required.
+ *
+ * HF Inference API for image-to-image accepts:
+ * - Content-Type: application/json
+ * - Body: { "inputs": <base64 image string>, "parameters": { "prompt": "..." } }
+ * OR
+ * - Content-Type: image/jpeg (or multipart)
+ * - Body: raw image bytes, with parameters header
+ *
+ * Response: raw image bytes
  */
 export async function POST(req: NextRequest) {
   try {
@@ -32,7 +40,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Build style-specific editing instruction prompt
-    // instruct-pix2pix / Kontext takes natural language instructions to transform the input image
     const styleInstructions: Record<string, string> = {
       "linkedin":
         "Transform this into a professional corporate LinkedIn headshot with clean neutral background, office attire, studio lighting, high-end business portrait",
@@ -91,35 +98,23 @@ export async function POST(req: NextRequest) {
 
     const fullPrompt = `${styleInstruction}${genderHint}${vibeHint}${paletteHint}`;
 
-    // Decode base64 image — strip data URI prefix if present
+    // Decode base64 image to raw bytes — strip data URI prefix if present
     let base64Image: string;
+    let mimeType: string = "image/jpeg";
     if (image.startsWith("data:")) {
-      base64Image = image.split(",")[1];
+      const parts = image.split(";base64,");
+      mimeType = parts[0].replace("data:", "") || "image/jpeg";
+      base64Image = parts[1] || parts[0];
     } else {
       base64Image = image;
     }
 
+    const imageBytes = Buffer.from(base64Image, "base64");
+
     // Use the HF Inference API for image-to-image
-    // Model: instruct-pix2pix — best for img2img style transfer (keeps composition, applies prompt)
     const HF_MODEL = "timbrooks/instruct-pix2pix";
     const HF_API_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
 
-    // HF image-to-image API spec:
-    // Request: { inputs: base64String, parameters: { prompt, ... } }
-    // Response: raw bytes (the generated image)
-    const requestBody = {
-      inputs: {
-        image: `data:image/jpeg;base64,${base64Image}`,
-        prompt: fullPrompt,
-      },
-      parameters: {
-        guidance_scale: 7.5,
-        image_guidance_scale: 1.5,
-        num_inference_steps: 30,
-      },
-    };
-
-    // Retry logic with backoff for HF cold starts / rate limits
     const maxRetries = 2;
     let lastError: any = null;
 
@@ -129,18 +124,20 @@ export async function POST(req: NextRequest) {
           await sleep(attempt * 3000);
         }
 
-        console.log(`[HF] Attempt ${attempt + 1}, model: ${HF_MODEL}`);
+        console.log(`[HF] Attempt ${attempt + 1}, model: ${HF_MODEL}, prompt length: ${fullPrompt.length}, image size: ${imageBytes.length}`);
 
+        // Try sending raw image bytes as body with prompt as x-use-prompt header
+        // This matches how HF expects img2img: image in body, params in header
         const response = await fetch(HF_API_URL, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
+            "Content-Type": mimeType,
           },
-          body: JSON.stringify(requestBody),
+          body: imageBytes,
         });
 
-        // Model loading (503) — common for first request
+        // Model loading (503) — common for first request (cold start)
         if (response.status === 503) {
           const data = await response.json().catch(() => ({}));
           const waitTime = (data as any).estimated_time || 30;
@@ -158,7 +155,7 @@ export async function POST(req: NextRequest) {
         // Rate limited
         if (response.status === 429) {
           const retryAfter = parseInt(response.headers.get("retry-after") || "10", 10);
-          console.warn(`[HF] Rate limited, waiting ${retryAfter}s`);
+          console.warn(`[HF] Rate limited, retry-after: ${retryAfter}s`);
           if (attempt < maxRetries) {
             await sleep(Math.min(retryAfter * 1000, 15000));
             continue;
@@ -171,25 +168,30 @@ export async function POST(req: NextRequest) {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`HF API ${response.status}: ${text.slice(0, 300)}`);
+          throw new Error(`HF API ${response.status}: ${text.slice(0, 500)}`);
         }
 
-        // Response is the image bytes
+        // Response should be raw image bytes
         const contentType = response.headers.get("content-type") || "";
-        console.log(`[HF] Response content-type: ${contentType}, status: ${response.status}`);
-
         const arrayBuffer = await response.arrayBuffer();
 
-        // Check we got a valid image back
-        if (arrayBuffer.byteLength < 100) {
+        console.log(`[HF] Response: content-type=${contentType}, size=${arrayBuffer.byteLength} bytes`);
+
+        // Check we got a valid image back (not a JSON error)
+        if (contentType.includes("application/json")) {
           const text = Buffer.from(arrayBuffer).toString("utf-8");
-          throw new Error(`Invalid response (only ${arrayBuffer.byteLength} bytes): ${text.slice(0, 200)}`);
+          throw new Error(`HF returned JSON instead of image: ${text.slice(0, 300)}`);
         }
 
-        // Convert to base64 data URL
+        if (arrayBuffer.byteLength < 1000) {
+          const text = Buffer.from(arrayBuffer).toString("utf-8");
+          throw new Error(`Response too small (${arrayBuffer.byteLength} bytes): ${text.slice(0, 200)}`);
+        }
+
+        // Convert to base64 data URL for returning to client
         const base64 = Buffer.from(arrayBuffer).toString("base64");
-        const mimeType = contentType.includes("image/") ? contentType : "image/png";
-        const dataUrl = `data:${mimeType};base64,${base64}`;
+        const responseMimeType = contentType.includes("image/") ? contentType : "image/png";
+        const dataUrl = `data:${responseMimeType};base64,${base64}`;
 
         console.log(`[HF] Success! Image generated: ${arrayBuffer.byteLength} bytes`);
 
@@ -200,7 +202,6 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         lastError = err;
         console.error(`[HF] Error on attempt ${attempt + 1}:`, err.message);
-        // Don't retry on non-retryable errors
         if (!err.message?.includes("503") && !err.message?.includes("429")) {
           break;
         }
