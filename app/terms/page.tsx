@@ -1,63 +1,80 @@
-import Link from 'next/link';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen py-20">
-      <div className="container mx-auto px-6 max-w-3xl">
-        <Link href="/" className="text-purple-400 hover:text-purple-300 transition mb-8 inline-block">← Back to Home</Link>
-        
-        <h1 className="text-4xl font-bold text-white mb-8">Terms of Service</h1>
-        
-        <div className="prose prose-invert max-w-none space-y-6 text-gray-300 leading-relaxed">
-          <p className="text-sm text-gray-500">Last updated: July 20, 2026</p>
+    <main className="min-h-screen">
+      <Header />
+      <div className="h-24 md:h-28" />
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">1. Acceptance of Terms</h2>
-            <p>By accessing or using FreePFP.ai, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.</p>
-          </section>
+      <section className="py-20">
+        <div className="container mx-auto px-6 max-w-3xl prose prose-invert prose-purple">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Terms of <span className="gradient-text">Service</span>
+          </h1>
+          <p className="text-gray-500 mb-12">Last updated: July 2026</p>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">2. Service Description</h2>
-            <p>FreePFP.ai provides AI-powered image transformation services. Users can upload photos and generate stylized profile pictures using artificial intelligence models.</p>
-          </section>
+          <div className="space-y-8 text-gray-400">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
+              <p>By accessing or using FreePFP.ai, you agree to be bound by these Terms of Service. If you do not agree, do not use our service.</p>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">3. User Accounts</h2>
-            <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to provide accurate and complete information when creating an account.</p>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">2. Service Description</h2>
+              <p>FreePFP.ai provides AI-generated profile pictures based on photos you upload. We offer 1 free daily generation, with additional credits available for purchase.</p>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">4. Acceptable Use</h2>
-            <p>You agree not to use the service to:</p>
-            <ul className="list-disc list-inside space-y-2 mt-3">
-              <li>Upload images of individuals without their consent</li>
-              <li>Create content that is illegal, harmful, or violates any laws</li>
-              <li>Use the service for any commercial purposes without proper licensing</li>
-              <li>Attempt to reverse engineer or exploit our systems</li>
-            </ul>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">3. User Accounts</h2>
+              <p>You must provide accurate information when creating an account. You are responsible for maintaining the security of your account credentials. You must be at least 13 years old to use this service.</p>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">5. Credits and Payments</h2>
-            <p>Free credits are provided daily and do not accumulate or transfer. Paid credits are non-refundable except as required by law. We reserve the right to modify pricing with notice.</p>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">4. Acceptable Use</h2>
+              <p>You agree not to:</p>
+              <ul className="list-disc pl-6 mt-2 space-y-1">
+                <li>Upload photos of individuals without their consent</li>
+                <li>Use the service to generate harmful, illegal, or misleading content</li>
+                <li>Attempt to circumvent credit limits or abuse the free daily allowance</li>
+                <li>Reverse engineer or copy our AI models or output algorithms</li>
+              </ul>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">6. Limitation of Liability</h2>
-            <p>FreePFP.ai is provided "as is" without warranties of any kind. We are not liable for any damages arising from your use of the service or the quality of generated images.</p>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">5. Intellectual Property</h2>
+              <p>Generated images are provided for your personal use. You may use them as profile pictures on social media and other platforms. The FreePFP.ai brand, website, and underlying technology remain our intellectual property.</p>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">7. Changes to Terms</h2>
-            <p>We reserve the right to modify these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">6. Payments and Credits</h2>
+              <p>Credit purchases are non-refundable. Credits do not expire. We reserve the right to change pricing with reasonable notice. Free daily credits reset every 24 hours and cannot be accumulated.</p>
+            </div>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">8. Contact</h2>
-            <p>For questions about these Terms, contact us at <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300 transition">hello@theaibarn.com</a></p>
-          </section>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">7. Limitation of Liability</h2>
+              <p>The service is provided "as is" without warranties. FreePFP.ai is not liable for any damages arising from use of the service or AI-generated outputs. Results may vary and we do not guarantee specific outcomes.</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">8. Termination</h2>
+              <p>We may terminate or suspend your account if you violate these terms. You may delete your account at any time by contacting us.</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">9. Changes to Terms</h2>
+              <p>We may update these terms from time to time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">10. Contact</h2>
+              <p>For questions about these Terms, contact us at <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300">hello@theaibarn.com</a>.</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <Footer />
+    </main>
   );
 }
