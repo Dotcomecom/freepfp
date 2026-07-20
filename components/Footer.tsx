@@ -1,6 +1,21 @@
+"use client";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Footer() {
+  const router = useRouter();
+
+  const scrollToSection = (sectionId: string) => {
+    router.push("/");
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
   return (
     <footer className="border-t border-purple-900/20 py-12">
       <div className="container mx-auto px-6">
@@ -23,8 +38,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/transform" className="text-gray-400 hover:text-white transition">Create</Link></li>
               <li><Link href="/transform" className="text-gray-400 hover:text-white transition">Styles</Link></li>
-              <li><a href="#features" className="text-gray-400 hover:text-white transition">Features</a></li>
-              <li><a href="#how-it-works" className="text-gray-400 hover:text-white transition">How It Works</a></li>
+              <li><button onClick={() => scrollToSection("features")} className="text-gray-400 hover:text-white transition">Features</button></li>
+              <li><button onClick={() => scrollToSection("how-it-works")} className="text-gray-400 hover:text-white transition">How It Works</button></li>
             </ul>
           </div>
           

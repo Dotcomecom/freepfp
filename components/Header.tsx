@@ -31,6 +31,16 @@ export default function Header() {
     router.push("/");
   };
 
+  const scrollToSection = (sectionId: string) => {
+    router.push("/");
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full z-50 bg-[#0a0010]/80 backdrop-blur-md border-b border-purple-900/20">
@@ -41,9 +51,9 @@ export default function Header() {
           </Link>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
-            <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
-            <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
+            <button onClick={() => scrollToSection("features")} className="text-gray-300 hover:text-white transition">Features</button>
+            <button onClick={() => scrollToSection("how-it-works")} className="text-gray-300 hover:text-white transition">How It Works</button>
+            <button onClick={() => scrollToSection("pricing")} className="text-gray-300 hover:text-white transition">Pricing</button>
           </div>
           
           <div className="flex items-center space-x-4">
