@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Force Node.js runtime — Replicate SDK doesn't work in Edge
+// Force Node.js runtime for fetch multipart support
 export const runtime = "nodejs";
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Image generation endpoint
+ * Uses Hugging Face Serverless Inference API with instruct-pix2pix for img2img style transfer.
+ * Free tier: hundreds of requests/hour, no credit card required initially.
+ */
 export async function POST(req: NextRequest) {
   try {
     const { image, style, gender, vibe, palette } = await req.json();
@@ -17,148 +22,188 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check for Replicate API key
-    const apiKey = process.env.REPLICATE_API_TOKEN;
+    // Check for Hugging Face API key
+    const apiKey = process.env.HUGGINGFACE_API_TOKEN;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "REPLICATE_API_TOKEN not configured" },
+        { error: "HUGGINGFACE_API_TOKEN not configured" },
         { status: 500 }
       );
     }
 
-    // Build the prompt based on selections
-    const stylePrompts: Record<string, string> = {
-      "linkedin": "professional corporate LinkedIn headshot, business attire, clean neutral background, studio lighting, high-end portrait photography",
-      "alt-goth": "dark gothic aesthetic portrait, dramatic makeup, dark clothing, moody atmospheric lighting, alternative style, deep shadows",
-      "anime": "anime style portrait illustration, vibrant colors, cel-shaded, Japanese animation aesthetic, clean linework, expressive eyes",
-      "fairycore": "fairycore aesthetic portrait, ethereal glow, flowers in hair, soft pastel colors, magical woodland lighting, dreamy bokeh",
-      "grunge": "90s grunge aesthetic portrait, edgy raw energy, film grain texture, alternative fashion, moody shadows",
-      "indie-sleaze": "indie sleaze aesthetic portrait, 2008 tumblr aesthetic, harsh flash photography, artsy retro cool, slightly messy",
-      "cottagecore": "cottagecore aesthetic portrait, soft natural golden lighting, floral, pastoral setting, vintage dress, dreamy atmosphere, meadow",
-      "cyberpunk": "cyberpunk portrait, neon lights reflecting on face, futuristic, glowing accents, sci-fi aesthetic, dark rainy background",
-      "dark-academia": "dark academia portrait, scholarly aesthetic, moody warm lighting, vintage clothing, old library background, warm amber tones",
-      "maximalist": "maximalist portrait, bold patterns, vibrant color mixing, artistic, layered textures, colorful statement fashion",
-      "minimalist": "minimalist clean portrait, simple pure background, elegant understated, modern aesthetic, soft even lighting",
-      "vaporwave": "vaporwave aesthetic portrait, pink and purple neon glow, retro 80s vibe, dreamy nostalgic haze",
+    // Build style-specific editing instruction prompt
+    // instruct-pix2pix takes natural language instructions to transform the input image
+    const styleInstructions: Record<string, string> = {
+      "linkedin":
+        "Transform this into a professional corporate LinkedIn headshot with clean neutral background, office attire, studio lighting, business portrait",
+      "alt-goth":
+        "Transform this into a dark gothic aesthetic portrait with dramatic makeup, dark moody atmospheric lighting, alternative style, deep shadows, edgy",
+      "anime":
+        "Transform this into an anime style portrait illustration with vibrant colors, cel-shaded, Japanese animation aesthetic, expressive eyes, clean linework",
+      "fairycore":
+        "Transform this into an ethereal fairycore portrait with flowers in hair, soft pastel colors, magical woodland lighting, dreamy bokeh, fantasy glow",
+      "grunge":
+        "Transform this into a 90s grunge aesthetic portrait with edgy raw energy, film grain texture, alternative fashion, moody shadows, vintage feel",
+      "indie-sleaze":
+        "Transform this into a 2008 indie sleaze aesthetic portrait with harsh flash photography, artsy retro cool, slightly messy, tumblr aesthetic",
+      "cottagecore":
+        "Transform this into a cottagecore portrait with soft natural golden lighting, floral setting, pastoral dreamy atmosphere, vintage pastoral style",
+      "cyberpunk":
+        "Transform this into a cyberpunk portrait with neon lights reflecting on face, futuristic, glowing neon accents, sci-fi aesthetic, dark background",
+      "dark-academia":
+        "Transform this into a dark academia portrait with moody warm lighting, scholarly aesthetic, vintage clothing, old library background, amber tones",
+      "maximalist":
+        "Transform this into a maximalist portrait with bold patterns, vibrant color mixing, artistic layered textures, colorful statement fashion",
+      "minimalist":
+        "Transform this into a minimalist clean portrait with simple pure background, elegant understated, modern aesthetic, soft even lighting",
+      "vaporwave":
+        "Transform this into a vaporwave aesthetic portrait with pink and purple neon glow, retro 80s vibe, dreamy nostalgic haze, synthwave",
     };
 
-    const genderPrompts: Record<string, string> = {
-      "male": "young male subject",
-      "female": "young female subject",
-      "neutral": "young person",
+    const genderHints: Record<string, string> = {
+      male: " (maintain male appearance)",
+      female: " (maintain female appearance)",
+      neutral: "",
     };
 
-    const vibePrompts: Record<string, string> = {
-      "dreamy": ", dreamy soft focus ethereal atmosphere",
-      "edgy": ", edgy dramatic high contrast",
-      "soft": ", soft gentle tones romantic mood",
-      "bold": ", bold striking commanding presence",
-      "mysterious": ", mysterious atmospheric cinematic mood",
-      "playful": ", playful lighthearted vibrant energy",
+    const vibeHints: Record<string, string> = {
+      dreamy: ", dreamy soft focus ethereal atmosphere",
+      edgy: ", edgy dramatic high contrast",
+      soft: ", soft gentle romantic mood",
+      bold: ", bold striking commanding presence",
+      mysterious: ", mysterious atmospheric cinematic mood",
+      playful: ", playful lighthearted vibrant energy",
     };
 
-    const palettePrompts: Record<string, string> = {
-      "warm": ", warm color palette golden hour tones",
-      "cool": ", cool color palette blue tones",
-      "pastel": ", pastel color palette muted soft candy colors",
-      "vibrant": ", vibrant highly saturated colors",
-      "monochrome": ", monochrome black and white tones",
-      "neon": ", neon bright electric colors glowing",
+    const paletteHints: Record<string, string> = {
+      warm: ", warm golden hour tones",
+      cool: ", cool blue tones",
+      pastel: ", muted soft pastel colors",
+      vibrant: ", highly saturated vivid colors",
+      monochrome: ", black and white monochrome",
+      neon: ", neon bright electric glowing colors",
     };
 
-    const stylePrompt = stylePrompts[style] || style;
-    const genderSubject = genderPrompts[gender] || "young person";
-    const vibePrompt = vibePrompts[vibe] || "";
-    const palettePrompt = palettePrompts[palette] || "";
+    const styleInstruction = styleInstructions[style] || styleInstructions["linkedin"];
+    const genderHint = genderHints[gender] || "";
+    const vibeHint = vibeHints[vibe] || "";
+    const paletteHint = paletteHints[palette] || "";
 
-    const fullPrompt = `${genderSubject}, ${stylePrompt}${vibePrompt}${palettePrompt}, high quality, detailed, professional photography, sharp focus, 85mm lens`;
-    const negativePrompt = "ugly, blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, watermark, text, bad face, cross-eyed, worst quality, jpeg artifacts";
+    const fullPrompt = `${styleInstruction}${genderHint}${vibeHint}${paletteHint}`;
 
-    // Build data URI if not already
-    const imageInput = image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
+    // Decode base64 image to Buffer
+    let imageBuffer: Buffer;
+    if (image.startsWith("data:")) {
+      const base64Data = image.split(",")[1];
+      imageBuffer = Buffer.from(base64Data, "base64");
+    } else {
+      imageBuffer = Buffer.from(image, "base64");
+    }
 
-    try {
-      const Replicate = (await import("replicate")).default;
-      const replicate = new Replicate({ auth: apiKey });
+    // Use instruct-pix2pix: best model for img2img style transfer
+    // It keeps the input image's composition while following the text instruction
+    const HF_MODEL = "timbrooks/instruct-pix2pix";
+    const HF_API_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
 
-      // Retry logic with backoff for rate limits
-      let lastError: any = null;
-      const maxRetries = 3;
+    // Build request body for image-to-image pipeline
+    // HF API for img2img: base64-encoded image in `inputs.image`, prompt in `inputs.prompt`
+    // Note: the newer image-to-image format accepts JSON with inputs containing both image and prompt
+    const requestBody = {
+      inputs: {
+        image: `data:image/jpeg;base64,${imageBuffer.toString("base64")}`,
+        prompt: fullPrompt,
+      },
+      parameters: {
+        guidance_scale: 7.5,
+        image_guidance_scale: 1.5,
+        num_inference_steps: 30,
+      },
+    };
 
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-          if (attempt > 0) {
-            // Wait with exponential backoff: 3s, 6s
-            await sleep(attempt * 3000);
-          }
+    // Retry logic with backoff for HF cold starts / rate limits
+    const maxRetries = 2;
+    let lastError: any = null;
 
-          // Use stable-diffusion-img2img which accepts image input
-          const output = await replicate.run(
-            "stability-ai/stable-diffusion-img2img" as any,
-            {
-              input: {
-                image: imageInput,
-                prompt: fullPrompt,
-                negative_prompt: negativePrompt,
-                guidance_scale: 7.5,
-                num_inference_steps: 50,
-                prompt_strength: 0.7, // 0 = keep original, 1 = full transform
-                num_outputs: 1,
-              },
-            }
-          );
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          // Wait with backoff: 2s, 4s
+          await sleep(attempt * 2000);
+        }
 
-          // Output is URL or array of URLs
-          const imageUrl = Array.isArray(output) ? output[0] : output;
-          const urlStr = typeof imageUrl === "string" ? imageUrl : null;
+        const response = await fetch(HF_API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
 
-          if (!urlStr) {
-            throw new Error("No image URL returned from model");
-          }
-
-          return NextResponse.json({
-            success: true,
-            imageUrl: urlStr,
-          });
-        } catch (err: any) {
-          lastError = err;
-
-          // If it's a rate limit (429), retry
-          if (err.message?.includes("429") || err.status === 429 || err.message?.includes("throttled")) {
-            console.warn(`Rate limited (attempt ${attempt + 1}/${maxRetries}), retrying...`);
+        // If model is loading (503), wait and retry
+        if (response.status === 503) {
+          const data = await response.json().catch(() => ({}));
+          const waitTime = (data as any).estimated_time || 30;
+          console.warn(`Model loading, estimated ${waitTime}s (attempt ${attempt + 1})`);
+          if (attempt < maxRetries) {
+            await sleep(Math.min(waitTime * 1000, 25000));
             continue;
           }
+          return NextResponse.json(
+            { error: "AI model is warming up. Please try again in a moment." },
+            { status: 503 }
+          );
+        }
 
-          // Other errors: don't retry
-          throw err;
+        // Rate limited
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get("retry-after") || "10", 10);
+          console.warn(`Rate limited, waiting ${retryAfter}s`);
+          if (attempt < maxRetries) {
+            await sleep(Math.min(retryAfter * 1000, 25000));
+            continue;
+          }
+          return NextResponse.json(
+            { error: "Service is busy right now. Please wait a moment and try again." },
+            { status: 503 }
+          );
+        }
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HF API ${response.status}: ${text.slice(0, 200)}`);
+        }
+
+        // Response is the image bytes (PNG)
+        const imageBlob = await response.blob();
+        if (!imageBlob || imageBlob.size < 100) {
+          throw new Error("Empty image response from model");
+        }
+
+        // Convert to base64 data URL
+        const arrayBuffer = await imageBlob.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        const contentType = imageBlob.type || "image/jpeg";
+        const dataUrl = `data:${contentType};base64,${base64}`;
+
+        return NextResponse.json({
+          success: true,
+          imageUrl: dataUrl,
+        });
+      } catch (err: any) {
+        lastError = err;
+        // If not a retryable error, bail out
+        if (!err.message?.includes("503") && !err.message?.includes("429")) {
+          break;
         }
       }
-
-      // All retries exhausted
-      const isRateLimit = lastError?.message?.includes("429") || lastError?.message?.includes("throttled");
-      return NextResponse.json(
-        {
-          error: isRateLimit
-            ? "Service is busy right now. Please wait 10 seconds and try again."
-            : `Generation failed: ${lastError?.message || "unknown error"}`,
-        },
-        { status: isRateLimit ? 503 : 500 }
-      );
-
-    } catch (replicateError: any) {
-      console.error("Replicate error:", replicateError);
-
-      const isRateLimit = replicateError.message?.includes("429") || replicateError.message?.includes("throttled");
-
-      return NextResponse.json(
-        {
-          error: isRateLimit
-            ? "Service is busy right now. Please wait 10 seconds and try again."
-            : `Generation failed: ${replicateError.message || "unknown error"}`,
-        },
-        { status: isRateLimit ? 503 : 500 }
-      );
     }
+
+    console.error("Hugging Face API error:", lastError);
+    return NextResponse.json(
+      { error: `Generation failed: ${lastError?.message || "unknown error"}` },
+      { status: 500 }
+    );
   } catch (error: any) {
     console.error("Generate API error:", error);
     return NextResponse.json(
