@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - FreePFP.ai",
+  description: "FreePFP.ai Privacy Policy - How we handle your data and use cookies",
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen">
@@ -9,65 +20,96 @@ export default function PrivacyPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
             Privacy <span className="gradient-text">Policy</span>
           </h1>
-          <p className="text-lg text-gray-400 text-center mb-12">
+          <p className="text-xl text-gray-400 text-center mb-16">
             Last updated: July 2026
           </p>
 
-          <div className="space-y-8 text-gray-300 leading-relaxed">
+          <div className="space-y-8">
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">1. Information We Collect</h2>
-              <p>
-                We collect the following information when you use FreePFP.ai:
+              <h2 className="text-2xl font-bold text-white mb-4">1. Information We Collect</h2>
+              <p className="text-gray-300 leading-relaxed mb-3">
+                When you use FreePFP.ai, we collect:
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 text-gray-400">
-                <li>Email address (for account creation)</li>
-                <li>Photos you upload for transformation</li>
-                <li>Usage data such as page views and generations</li>
+              <ul className="text-gray-300 space-y-2 ml-6">
+                <li>• <strong className="text-white">Account information:</strong> Email address when you register</li>
+                <li>• <strong className="text-white">Uploaded photos:</strong> Temporarily processed for transformation (not permanently stored)</li>
+                <li>• <strong className="text-white">Usage data:</strong> Pages visited, features used, generation counts</li>
+                <li>• <strong className="text-white">Cookies:</strong> Essential cookies for authentication and service functionality</li>
               </ul>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">2. How We Use Your Information</h2>
-              <p className="text-gray-400">
-                Your uploaded photos are processed by our AI partner (Replicate) to generate transformed images. We do not store uploaded photos on our servers. Generated images are available for immediate download. Email addresses are used solely for account management and service communications.
+              <h2 className="text-2xl font-bold text-white mb-4">2. How We Use Your Information</h2>
+              <p className="text-gray-300 leading-relaxed mb-3">
+                We use your information to:
+              </p>
+              <ul className="text-gray-300 space-y-2 ml-6">
+                <li>• Create and manage your account</li>
+                <li>• Process your photo transformations</li>
+                <li>• Track your daily credit allocation</li>
+                <li>• Improve our service and user experience</li>
+                <li>• Display relevant advertisements</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">3. Data Sharing</h2>
+              <p className="text-gray-300 leading-relaxed">
+                We share data with:
+              </p>
+              <ul className="text-gray-300 space-y-2 ml-6 mt-3">
+                <li>• <strong className="text-white">Replicate:</strong> Our AI processing partner, for image transformation (photos are deleted after processing)</li>
+                <li>• <strong className="text-white">Google AdSense:</strong> We display third-party ads that may use cookies to serve relevant advertisements based on your prior visits. Google uses the DoubleClick DART cookie to serve ads based on your visit to our site and other sites. You may opt out of DART cookie use by visiting the <a href="https://www.google.com/privacy_ads.html" className="text-purple-400 hover:text-purple-300 underline">Google Ad Settings</a>.</li>
+                <li>• <strong className="text-white">Supabase:</strong> Our database and authentication provider</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">4. Data Storage & Security</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Your uploaded photos are processed immediately and not permanently stored on our servers. Account data is stored securely in our EU-based Supabase database with encryption at rest and in transit. We implement industry-standard security measures to protect your data.
               </p>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">3. Data Sharing</h2>
-              <p className="text-gray-400">
-                We share uploaded photos with our AI processing partner (Replicate) solely for the purpose of generating your transformed images. We do not sell, trade, or share your personal information with third parties for marketing purposes.
+              <h2 className="text-2xl font-bold text-white mb-4">5. Cookies & Advertising</h2>
+              <p className="text-gray-300 leading-relaxed mb-3">
+                We use cookies for:
+              </p>
+              <ul className="text-gray-300 space-y-2 ml-6 mb-3">
+                <li>• <strong className="text-white">Essential cookies:</strong> Authentication, session management, and service functionality</li>
+                <li>• <strong className="text-white">Advertising cookies:</strong> Google AdSense and its partners may use cookies to serve ads based on your prior visits to our site or other sites. These cookies allow Google and its partners to serve ads based on your visit to freepfp.ai and/or other sites on the Internet.</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed">
+                You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" className="text-purple-400 hover:text-purple-300 underline">Google Ads Settings</a> or by visiting <a href="https://www.aboutads.info" className="text-purple-400 hover:text-purple-300 underline">www.aboutads.info</a>.
               </p>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">4. Data Retention</h2>
-              <p className="text-gray-400">
-                Uploaded photos are not stored on our servers. Account information (email, credit balance) is retained for as long as your account is active. You may request account deletion at any time by contacting hello@theaibarn.com.
+              <h2 className="text-2xl font-bold text-white mb-4">6. Your Rights (GDPR/CCPA)</h2>
+              <p className="text-gray-300 leading-relaxed">
+                You have the right to: access your personal data, request correction or deletion of your data, object to data processing, and request data portability. To exercise these rights, contact us at hello@theaibarn.com. We will respond within 30 days.
               </p>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">5. Cookies</h2>
-              <p className="text-gray-400">
-                We use essential cookies to maintain your login session. We do not use third-party advertising cookies or tracking pixels.
+              <h2 className="text-2xl font-bold text-white mb-4">7. Children's Privacy</h2>
+              <p className="text-gray-300 leading-relaxed">
+                FreePFP.ai is not intended for users under 13 years of age. We do not knowingly collect personal information from children. If you believe we have collected data from a child, please contact us immediately.
               </p>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">6. Your Rights</h2>
-              <p className="text-gray-400">
-                You have the right to access, correct, or delete your personal data at any time. Contact us at hello@theaibarn.com to exercise these rights.
+              <h2 className="text-2xl font-bold text-white mb-4">8. Changes to This Policy</h2>
+              <p className="text-gray-300 leading-relaxed">
+                We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.
               </p>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-3">7. Contact</h2>
-              <p className="text-gray-400">
-                For privacy concerns or requests, email us at{' '}
-                <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300 transition">
-                  hello@theaibarn.com
-                </a>.
+              <h2 className="text-2xl font-bold text-white mb-4">9. Contact Us</h2>
+              <p className="text-gray-300 leading-relaxed">
+                If you have any questions about this privacy policy or our data practices, please contact us at: <a href="mailto:hello@theaibarn.com" className="text-purple-400 hover:text-purple-300 underline">hello@theaibarn.com</a>
               </p>
             </div>
           </div>

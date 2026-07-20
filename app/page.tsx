@@ -4,6 +4,7 @@ import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import AdSenseAd from "@/components/AdSenseAd";
 
 export default function Home() {
   return (
@@ -15,6 +16,11 @@ export default function Home() {
 
       {/* Hero component - includes headline, subtitle, and 3 image boxes */}
       <Hero />
+
+      {/* Ad placement - below hero, above pricing */}
+      <div className="container mx-auto px-6 py-4">
+        <AdSenseAd />
+      </div>
 
       {/* Credit purchase banner - below hero images */}
       <section id="pricing" className="py-6 scroll-mt-32">
@@ -65,8 +71,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Ad placement - below pricing, above HowItWorks */}
+      <div className="container mx-auto px-6 py-6">
+        <AdSenseAd />
+      </div>
+
       <HowItWorks />
+
+      {/* Ad placement - between HowItWorks and Features */}
+      <div className="container mx-auto px-6 py-6">
+        <AdSenseAd />
+      </div>
+
       <Features />
+
+      {/* Ad placement - below Features, above Footer */}
+      <div className="container mx-auto px-6 py-6">
+        <AdSenseAd />
+      </div>
+
       <Footer />
     </main>
   );

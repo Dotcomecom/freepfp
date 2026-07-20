@@ -1,342 +1,306 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import Header from "@/components/Header";
-import PhotoUploader from "@/components/PhotoUploader";
-import TransformResults from "@/components/TransformResults";
-import AuthModal from "@/components/AuthModal";
+import { supabase } from "@/lib/supabase";
+import AdSenseAd from "@/components/AdSenseAd";
 
 const STYLES = [
-  { id: "linkedin", name: "LinkedIn Profile", emoji: "💼" },
-  { id: "alt-goth", name: "Alt / Goth", emoji: "🖤" },
-  { id: "anime", name: "Anime", emoji: "🎌" },
-  { id: "fairycore", name: "Fairycore", emoji: "🧚" },
-  { id: "grunge", name: "Grunge", emoji: "🎸" },
-  { id: "indie-sleaze", name: "Indie Sleaze", emoji: "🎞️" },
-  { id: "cottagecore", name: "Cottagecore", emoji: "🌸" },
-  { id: "cyberpunk", name: "Cyberpunk", emoji: "🤖" },
-  { id: "dark-academia", name: "Dark Academia", emoji: "📚" },
-  { id: "maximalist", name: "Maximalist", emoji: "🎭" },
-  { id: "minimalist", name: "Minimalist", emoji: "◽" },
-  { id: "vaporwave", name: "Vaporwave", emoji: "🌴" },
+  {
+    id: "linkedin",
+    name: "LinkedIn Profile",
+    description: "Professional headshot",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
+  },
+  {
+    id: "alt-goth",
+    name: "Alt / Goth",
+    description: "Dark alternative style",
+    image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop",
+    prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
+  },
+  {
+    id: "anime",
+    name: "Anime",
+    description: "Japanese animation style",
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
+    prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
+  },
+  {
+    id: "fairycore",
+    name: "Fairycore",
+    description: "Whimsical fairy aesthetic",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+    prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
+  },
+  {
+    id: "cyberpunk",
+    name: "Cyberpunk",
+    description: "Futuristic neon style",
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop",
+    prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
+  },
+  {
+    id: "cottagecore",
+    name: "Cottagecore",
+    description: "Rural pastoral charm",
+    image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop",
+    prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
+  },
+  {
+    id: "indie-sleaze",
+    name: "Indie Sleaze",
+    description: "2000s indie rock vibe",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+    prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
+  },
+  {
+    id: "dark-academia",
+    name: "Dark Academia",
+    description: "Literary intellectual",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
+    prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
+  },
+  {
+    id: "vaporwave",
+    name: "Vaporwave",
+    description: "80s retro aesthetic",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+    prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
+  },
+  {
+    id: "old-money",
+    name: "Old Money",
+    description: "Classic wealthy aesthetic",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    prompt: "old money portrait, classic wealthy aesthetic, timeless elegance, sophisticated neutral tones, aristocratic refinement",
+  },
+  {
+    id: "grunge",
+    name: "Grunge",
+    description: "90s rock and roll",
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop",
+    prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
+  },
+  {
+    id: "fantasy",
+    name: "Fantasy",
+    description: "Mythical character art",
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
+    prompt: "fantasy portrait, mythical character art, heroic fantasy style, dramatic lighting, magical enchanting atmosphere",
+  },
 ];
 
-const GENDERS = [
-  { id: "male", name: "Male", emoji: "♂" },
-  { id: "female", name: "Female", emoji: "♀" },
-  { id: "neutral", name: "Neutral", emoji: "✦" },
-];
-
-const VIBES = [
-  { id: "dreamy", name: "Dreamy", emoji: "💭" },
-  { id: "edgy", name: "Edgy", emoji: "⚡" },
-  { id: "soft", name: "Soft", emoji: "🌷" },
-  { id: "bold", name: "Bold", emoji: "🔥" },
-  { id: "mysterious", name: "Mysterious", emoji: "🌙" },
-  { id: "playful", name: "Playful", emoji: "🎈" },
-];
-
-const PALETTES = [
-  { id: "warm", name: "Warm", emoji: "🔆", swatch: "from-orange-400 to-red-500" },
-  { id: "cool", name: "Cool", emoji: "❄️", swatch: "from-cyan-400 to-blue-500" },
-  { id: "pastel", name: "Pastel", emoji: "🎀", swatch: "from-pink-200 to-purple-200" },
-  { id: "vibrant", name: "Vibrant", emoji: "🌈", swatch: "from-fuchsia-500 to-yellow-400" },
-  { id: "monochrome", name: "Monochrome", emoji: "⚪", swatch: "from-gray-300 to-gray-600" },
-  { id: "neon", name: "Neon", emoji: "💫", swatch: "from-green-400 to-pink-500" },
-];
+const VIBES = ["soft", "moody", "vibrant", "natural"];
+const PALETTES = ["warm", "cool", "neutral", "bold"];
 
 export default function TransformPage() {
-  const { user, credits, useCredit } = useAuth();
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [selectedVibe, setSelectedVibe] = useState<string | null>(null);
-  const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
-  const [transformed, setTransformed] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [creditModalOpen, setCreditModalOpen] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const { user, credits } = useAuth();
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [style, setStyle] = useState<string | null>(null);
+  const [gender, setGender] = useState("female");
+  const [vibe, setVibe] = useState("soft");
+  const [palette, setPalette] = useState("warm");
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const selectionsComplete = uploadedImage && selectedStyle && selectedGender && selectedVibe && selectedPalette;
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPhoto(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleGenerate = async () => {
+    if (!photo || !style) {
+      setError("Please upload a photo and select a style");
+      return;
+    }
     if (!user) {
-      setAuthModalOpen(true);
+      setError("Please sign in to generate images");
       return;
     }
-    if (credits <= 0) {
-      setCreditModalOpen(true);
-      return;
-    }
-    if (!selectionsComplete) return;
 
-    setProcessing(true);
-    setErrorMessage(null);
-    setTransformed(false);
-    setGeneratedImageUrl(null);
+    setGenerating(true);
+    setError("");
 
     try {
-      const res = await fetch("/api/generate", {
+      const selectedStyle = STYLES.find(s => s.id === style);
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          image: uploadedImage,
-          style: selectedStyle,
-          gender: selectedGender,
-          vibe: selectedVibe,
-          palette: selectedPalette,
+          image: photo,
+          style: style,
+          prompt: selectedStyle?.prompt || "",
+          gender,
+          vibe,
+          palette,
         }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
+      if (!response.ok) {
         throw new Error(data.error || "Generation failed");
       }
 
-      // Deduct the credit
-      await useCredit();
+      // Deduct credit
+      const { error: creditError } = await supabase.rpc("use_credit");
+      if (creditError) console.error("Credit deduction error:", creditError);
 
-      setGeneratedImageUrl(data.imageUrl);
-      setTransformed(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Generation error:", err);
-      setErrorMessage(err.message || "Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : "Generation failed");
     } finally {
-      setProcessing(false);
+      setGenerating(false);
     }
   };
 
-  const handleReset = () => {
-    setTransformed(false);
-    setGeneratedImageUrl(null);
-    setErrorMessage(null);
-    setSelectedStyle(null);
-    setSelectedGender(null);
-    setSelectedVibe(null);
-    setSelectedPalette(null);
-  };
-
   return (
-    <>
-      <Header />
-      <main className="min-h-screen pt-20 pb-12 bg-gradient-to-b from-[#0a0015] via-[#120020] to-[#0a0015]">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 gradient-text">
-              Create Your Masterpiece
-            </h1>
-            <p className="text-lg text-gray-400">
-              Pick your style, set the mood, and let AI do the magic ✨
-            </p>
+    <div className="min-h-screen py-12 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+          Transform Your Photo
+        </h1>
+        <p className="text-center text-gray-400 mb-8">
+          You have <span className="text-purple-400 font-semibold">{credits}</span> free credit{credits !== 1 ? "s" : ""} remaining today
+        </p>
+
+        {/* Ad placement - below header */}
+        <AdSenseAd />
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
+            {error}
           </div>
+        )}
 
-          {errorMessage && (
-            <div className="mb-6 p-4 bg-red-900/20 border border-red-900/40 rounded-xl text-red-300 text-center">
-              <p className="font-medium">{errorMessage}</p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT COLUMN: Photo + Results */}
-            <div className="lg:col-span-1 space-y-6">
-              <PhotoUploader onImageUpload={(img) => setUploadedImage(img)} />
-              <TransformResults
-                transformed={transformed}
-                selectedStyle={selectedStyle || ""}
-                imageUrl={generatedImageUrl}
-                processing={processing}
-              />
-              {transformed && (
-                <button
-                  onClick={handleReset}
-                  className="w-full py-3 bg-purple-900/30 border border-purple-700/50 text-gray-200 rounded-xl hover:bg-purple-900/50 transition"
-                >
-                  ↻ Create Another
-                </button>
-              )}
-
-              {/* Credits display */}
-              <div className="p-4 bg-purple-900/20 border border-purple-900/30 rounded-xl text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span className="text-sm font-medium text-purple-300">Credits remaining</span>
-                </div>
-                <div className="text-3xl font-bold text-white mb-1">{credits}</div>
-                <div className="text-xs text-gray-400 mb-3">
-                  1 free credit resets daily
-                </div>
-                {credits === 0 && (
-                  <a href="/checkout" className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition">
-                    Get More Credits
-                  </a>
-                )}
+        {/* Photo Upload */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4">1. Upload Your Photo</h2>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full border-2 border-dashed border-purple-500/50 hover:border-purple-400 rounded-xl p-12 transition-all"
+          >
+            {photo ? (
+              <img src={photo} alt="Selected" className="max-h-64 mx-auto rounded-lg" />
+            ) : (
+              <div className="text-center">
+                <svg className="w-16 h-16 mx-auto mb-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="text-lg text-gray-300">Click to upload your photo</p>
+                <p className="text-sm text-gray-500 mt-2">JPG, PNG up to 10MB</p>
               </div>
-            </div>
+            )}
+          </button>
+        </div>
 
-            {/* RIGHT COLUMN: Selection flow */}
-            <div className="lg:col-span-2 space-y-6">
-
-              {/* STEP 1: STYLE */}
-              <section className="bg-purple-900/10 border border-purple-900/30 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center text-sm">1</div>
-                  <h2 className="text-2xl font-bold text-white">Choose Your Style</h2>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {STYLES.map((style) => (
-                    <button
-                      key={style.id}
-                      onClick={() => setSelectedStyle(style.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        selectedStyle === style.id
-                          ? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
-                          : "border-purple-900/30 bg-purple-900/10 hover:border-purple-700/50 hover:bg-purple-900/20"
-                      }`}
-                    >
-                      <span className="text-2xl mb-1 block">{style.emoji}</span>
-                      <span className={`text-sm font-medium ${selectedStyle === style.id ? "text-white" : "text-gray-300"}`}>
-                        {style.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              {/* STEP 2: GENDER */}
-              <section className="bg-purple-900/10 border border-purple-900/30 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center text-sm">2</div>
-                  <h2 className="text-2xl font-bold text-white">Gender Presentation</h2>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {GENDERS.map((gender) => (
-                    <button
-                      key={gender.id}
-                      onClick={() => setSelectedGender(gender.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-center ${
-                        selectedGender === gender.id
-                          ? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
-                          : "border-purple-900/30 bg-purple-900/10 hover:border-purple-700/50 hover:bg-purple-900/20"
-                      }`}
-                    >
-                      <span className="text-2xl mb-1 block">{gender.emoji}</span>
-                      <span className={`text-sm font-medium ${selectedGender === gender.id ? "text-white" : "text-gray-300"}`}>
-                        {gender.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              {/* STEP 3: VIBE */}
-              <section className="bg-purple-900/10 border border-purple-900/30 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center text-sm">3</div>
-                  <h2 className="text-2xl font-bold text-white">Vibe Check</h2>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {VIBES.map((vibe) => (
-                    <button
-                      key={vibe.id}
-                      onClick={() => setSelectedVibe(vibe.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-center ${
-                        selectedVibe === vibe.id
-                          ? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
-                          : "border-purple-900/30 bg-purple-900/10 hover:border-purple-700/50 hover:bg-purple-900/20"
-                      }`}
-                    >
-                      <span className="text-2xl mb-1 block">{vibe.emoji}</span>
-                      <span className={`text-sm font-medium ${selectedVibe === vibe.id ? "text-white" : "text-gray-300"}`}>
-                        {vibe.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              {/* STEP 4: COLOR PALETTE */}
-              <section className="bg-purple-900/10 border border-purple-900/30 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold flex items-center justify-center text-sm">4</div>
-                  <h2 className="text-2xl font-bold text-white">Color Palette</h2>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {PALETTES.map((palette) => (
-                    <button
-                      key={palette.id}
-                      onClick={() => setSelectedPalette(palette.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-center ${
-                        selectedPalette === palette.id
-                          ? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
-                          : "border-purple-900/30 bg-purple-900/10 hover:border-purple-700/50 hover:bg-purple-900/20"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${palette.swatch} mx-auto mb-2`}></div>
-                      <span className={`text-sm font-medium ${selectedPalette === palette.id ? "text-white" : "text-gray-300"}`}>
-                        {palette.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              {/* GENERATE BUTTON */}
+        {/* Style Selection */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {STYLES.map(s => (
               <button
-                onClick={handleGenerate}
-                disabled={!selectionsComplete || processing}
-                className={`w-full py-5 rounded-2xl text-xl font-bold transition-all ${
-                  selectionsComplete && !processing
-                    ? "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:-translate-y-0.5"
-                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                key={s.id}
+                onClick={() => setStyle(s.id)}
+                className={`relative group rounded-xl overflow-hidden transition-all ${
+                  style === s.id ? "ring-4 ring-purple-500 scale-105" : "ring-0"
                 }`}
               >
-                {processing ? (
-                  <span className="flex items-center justify-center gap-3">
-                    <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating Magic...
-                  </span>
-                ) : selectionsComplete ? (
-                  "✨ Generate My PFP"
-                ) : (
-                  "Complete All Steps to Generate"
-                )}
+                <img src={s.image} alt={s.name} className="w-full aspect-square object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <div className="font-semibold text-white">{s.name}</div>
+                    <div className="text-xs text-gray-300">{s.description}</div>
+                  </div>
+                </div>
               </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Ad placement - below styles */}
+        <AdSenseAd />
+
+        {/* Options */}
+        <div className="mb-12 grid md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-xl font-semibold mb-3">Gender</h2>
+            <div className="flex gap-2">
+              {["female", "male"].map(g => (
+                <button
+                  key={g}
+                  onClick={() => setGender(g)}
+                  className={`flex-1 px-4 py-2 rounded-lg transition-all ${
+                    gender === g ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  {g.charAt(0).toUpperCase() + g.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-3">Vibe</h2>
+            <div className="flex flex-wrap gap-2">
+              {VIBES.map(v => (
+                <button
+                  key={v}
+                  onClick={() => setVibe(v)}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    vibe === v ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  {v.charAt(0).toUpperCase() + v.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <h2 className="text-xl font-semibold mb-3">Palette</h2>
+            <div className="flex flex-wrap gap-2">
+              {PALETTES.map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPalette(p)}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    palette === p ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-      </main>
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        mode="signup"
-        onSwitchMode={() => {}}
-      />
-      {creditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-[#1a0030] border border-purple-900/50 rounded-2xl p-8 max-w-md text-center">
-            <div className="text-5xl mb-4">⚡</div>
-            <h3 className="text-2xl font-bold text-white mb-2">No Credits Left</h3>
-            <p className="text-gray-400 mb-6">You&apos;ve used your free credit for today. Purchase more to keep creating!</p>
-            <div className="flex gap-3">
-              <button onClick={() => setCreditModalOpen(false)} className="flex-1 py-3 border border-purple-700/50 text-gray-300 rounded-xl hover:bg-purple-900/30 transition">
-                Cancel
-              </button>
-              <a href="/checkout" className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition">
-                Get Credits
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+
+        {/* Generate Button */}
+        <button
+          onClick={handleGenerate}
+          disabled={generating || !photo || !style}
+          className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-xl font-semibold transition-all shadow-lg"
+        >
+          {generating ? "Generating..." : "Generate Profile Picture"}
+        </button>
+
+        {/* Ad placement - below generate button */}
+        <AdSenseAd />
+      </div>
+    </div>
   );
 }
