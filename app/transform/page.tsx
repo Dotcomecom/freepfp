@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import AdSenseAd from "@/components/AdSenseAd";
 
 const STYLES = [
@@ -150,7 +150,7 @@ export default function TransformPage() {
       }
 
       // Deduct credit
-      const { error: creditError } = await supabase.rpc("use_credit");
+      const { error: creditError } = await getSupabaseClient().rpc("use_credit");
       if (creditError) console.error("Credit deduction error:", creditError);
 
     } catch (err) {
