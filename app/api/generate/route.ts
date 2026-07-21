@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
     // PhotoMaker V2 version hash
     const VERSION = "ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4";
 
-    // PhotoMaker expects multiple images as array for stronger identity
-    const imageInput = image.startsWith("http") ? [image] : [image];
+    // PhotoMaker V2 expects input_image as a string URL, not an array
+    const imageInput = image.startsWith("http") ? image : image;
 
     // Step 1: Create prediction
     const createResponse = await fetch("https://api.replicate.com/v1/predictions", {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         input: {
           prompt: `photo of a ${finalPrompt}`,
           neg_prompt: "blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, mutation, ugly, text, watermark",
-          image: imageInput,
+          input_image: imageInput,
           style_name: "Photographic (Default)",
           num_steps: 30,
           style_strength_ratio: 20,

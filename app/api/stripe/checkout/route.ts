@@ -3,16 +3,42 @@ export const dynamic = "force-dynamic";
 import { getStripe } from "@/lib/stripe";
 
 export async function POST(req: Request) {
-  const body = await req.text();
-  const stripe = await getStripe();
+  try {
+    const { credits, price, userId } = await req.json();
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [{ price: "price_1234567890", quantity: 1 }],
-    mode: "subscription",
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing`,
-  });
+    if (!credits || !price) {
+      return Response.json({ error: "Missing credits or price" }, { status: 400 });
+    }
 
-  return Response.json({ url: session.url });
+    const stripe = await getStripe();
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `${credits} PFP Transformation Credits`,
+              description: `Buy ${credits} AI profile picture transformations on freepfp.ai`,
+            },
+            unit_amount: Math.round(price * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin")}/transform?checkout=success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || req.headers.get("origin")}/checkout`,
+      metadata: {
+        credits: String(credits),
+        userId: userId || "",
+      },
+    });
+
+    return Response.json({ url: session.url });
+  } catch (err: any) {
+    console.error("Stripe checkout error:", err);
+    return Response.json({ error: err.message || "Something went wrong" }, { status: 500 });
+  }
 }
