@@ -10,7 +10,7 @@ const STYLES = [
     id: "linkedin",
     name: "LinkedIn Profile",
     description: "Professional headshot",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
     prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
   },
   {
@@ -211,35 +211,38 @@ export default function TransformPage() {
         {/* Style Selection */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {STYLES.map((s) => {
               const isSelected = style === s.id;
               return (
                 <button
                   key={s.id}
                   onClick={() => setStyle(s.id)}
-                  className={`relative rounded-xl overflow-hidden aspect-square transition-all ${
-                    isSelected ? "ring-4 ring-purple-500 scale-105" : "hover:scale-102 opacity-80 hover:opacity-100"
+                  className={`relative rounded-xl overflow-hidden transition-all ${
+                    isSelected ? "ring-4 ring-purple-500 scale-105" : "hover:scale-105 opacity-80 hover:opacity-100"
                   }`}
                 >
-                  {/* Background Image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${s.image})` }}
-                  />
-                  
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
-                  {/* Content */}
-                  <div className="relative h-full flex flex-col justify-end p-4 text-left">
-                    <h3 className="text-white font-bold text-lg mb-1 drop-shadow-lg">{s.name}</h3>
-                    <p className="text-gray-200 text-sm drop-shadow-md">{s.description}</p>
+                  {/* Image */}
+                  <div className="aspect-square w-full relative">
+                    <img 
+                      src={s.image} 
+                      alt={s.name}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                    
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
+                      <h3 className="text-white font-bold text-lg mb-1 drop-shadow-lg">{s.name}</h3>
+                      <p className="text-gray-200 text-sm drop-shadow-md">{s.description}</p>
+                    </div>
                   </div>
                   
                   {/* Selected indicator */}
                   {isSelected && (
-                    <div className="absolute top-2 right-2 bg-purple-500 rounded-full p-1">
+                    <div className="absolute top-3 right-3 bg-purple-500 rounded-full p-1.5 shadow-lg">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
