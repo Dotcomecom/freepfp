@@ -5,59 +5,103 @@ import { useAuth } from "@/lib/AuthContext";
 import { getSupabaseClient } from "@/lib/supabase";
 import AdSenseAd from "@/components/AdSenseAd";
 
-// Local images are in /style-previews/*.jpg (copied from user reference photos).
-// Styles without a confirmed photo use a CSS gradient + emoji so the card is still meaningful.
-const STYLE_BACKGROUNDS: Record<string, { gradient: string; emoji: string }> = {
-  linkedin:        { gradient: "linear-gradient(135deg, #0077B5 0%, #00A0DC 100%)",      emoji: "💼" },
-  "alt-goth":      { gradient: "linear-gradient(135deg, #1a0011 0%, #4a0000 60%, #0a0a0a 100%)", emoji: "🖤" },
-  anime:           { gradient: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 40%, #a18cd1 100%)", emoji: "✨" },
-  fairycore:       { gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 30%, #a8e0a0 100%)", emoji: "🧚" },
-  cyberpunk:       { gradient: "linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 100%)", emoji: "" },
-  cottagecore:     { gradient: "linear-gradient(135deg, #6a994e 0%, #a7c957 50%, #faedcd 100%)", emoji: "🌸" },
-  "indie-sleaze":  { gradient: "linear-gradient(135deg, #ee9ca7 0%, #ffdde1 40%, #2b2b2b 100%)", emoji: "" },
-  "dark-academia": { gradient: "linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #b8860b 100%)", emoji: "📚" },
-  vaporwave:       { gradient: "linear-gradient(135deg, #7b2ff7 0%, #f107a3 50%, #00d2ff 100%)", emoji: "💾" },
-  maximalist:      { gradient: "linear-gradient(135deg, #f5af19 0%, #f12711 30%, #c471ed 60%, #12c2e9 100%)", emoji: "🌈" },
-  minimalist:      { gradient: "linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #f5f5f5 100%)", emoji: "" },
-  grunge:          { gradient: "linear-gradient(135deg, #434343 0%, #2c2c2c 40%, #ff4757 100%)", emoji: "🎭" },
-};
-
-// Image filename in /style-previews/ — leave undefined to show gradient+emoji fallback
-const STYLE_IMAGE: Record<string, string | undefined> = {
-  linkedin:   "linkedin.jpg",
-  "alt-goth": "goth.jpg",
-  fairycore:  "fairycore.jpg",
-  cyberpunk:  "cyberpunk.jpg",
-  cottagecore:"cottagecore.jpg",
-  // anime, indie-sleaze, dark-academia, vaporwave, maximalist, minimalist, grunge
-  // => gradient fallback until a reference photo is provided
-};
-
 const STYLES = [
-  { id: "linkedin",      name: "LinkedIn Profile", description: "Professional headshot",
-    prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire" },
-  { id: "alt-goth",      name: "Alt / Goth",      description: "Dark alternative style",
-    prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows" },
-  { id: "anime",         name: "Anime",           description: "Japanese animation style",
-    prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired" },
-  { id: "fairycore",     name: "Fairycore",       description: "Whimsical fairy aesthetic",
-    prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle" },
-  { id: "cyberpunk",     name: "Cyberpunk",       description: "Futuristic neon style",
-    prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic" },
-  { id: "cottagecore",   name: "Cottagecore",     description: "Rural pastoral charm",
-    prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting" },
-  { id: "indie-sleaze",  name: "Indie Sleaze",    description: "2000s indie rock vibe",
-    prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe" },
-  { id: "dark-academia", name: "Dark Academia",   description: "Literary intellectual",
-    prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe" },
-  { id: "vaporwave",     name: "Vaporwave",       description: "80s retro aesthetic",
-    prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art" },
-  { id: "maximalist",    name: "Maximalist",      description: "Bold & vibrant",
-    prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures" },
-  { id: "minimalist",    name: "Minimalist",      description: "Clean & simple",
-    prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography" },
-  { id: "grunge",        name: "Grunge",          description: "90s rock and roll",
-    prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion" },
+  {
+    id: "linkedin",
+    name: "LinkedIn Profile",
+    description: "Professional headshot",
+    gradient: "from-blue-600 to-blue-800",
+    emoji: "💼",
+    prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
+  },
+  {
+    id: "alt-goth",
+    name: "Alt / Goth",
+    description: "Dark alternative style",
+    gradient: "from-gray-900 to-red-950",
+    emoji: "🖤",
+    prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
+  },
+  {
+    id: "anime",
+    name: "Anime",
+    description: "Japanese animation style",
+    gradient: "from-pink-500 to-purple-600",
+    emoji: "✨",
+    prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
+  },
+  {
+    id: "fairycore",
+    name: "Fairycore",
+    description: "Whimsical fairy aesthetic",
+    gradient: "from-green-300 to-pink-300",
+    emoji: "",
+    prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
+  },
+  {
+    id: "cyberpunk",
+    name: "Cyberpunk",
+    description: "Futuristic neon style",
+    gradient: "from-fuchsia-600 to-cyan-500",
+    emoji: "⚡",
+    prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
+  },
+  {
+    id: "cottagecore",
+    name: "Cottagecore",
+    description: "Rural pastoral charm",
+    gradient: "from-green-400 to-yellow-300",
+    emoji: "🌸",
+    prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
+  },
+  {
+    id: "indie-sleaze",
+    name: "Indie Sleaze",
+    description: "2000s indie rock vibe",
+    gradient: "from-orange-600 to-red-700",
+    emoji: "",
+    prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
+  },
+  {
+    id: "dark-academia",
+    name: "Dark Academia",
+    description: "Literary intellectual",
+    gradient: "from-amber-900 to-yellow-700",
+    emoji: "📚",
+    prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
+  },
+  {
+    id: "vaporwave",
+    name: "Vaporwave",
+    description: "80s retro aesthetic",
+    gradient: "from-purple-500 to-cyan-400",
+    emoji: "💾",
+    prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
+  },
+  {
+    id: "maximalist",
+    name: "Maximalist",
+    description: "Bold & vibrant",
+    gradient: "from-red-500 via-yellow-500 to-blue-500",
+    emoji: "",
+    prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
+  },
+  {
+    id: "minimalist",
+    name: "Minimalist",
+    description: "Clean & simple",
+    gradient: "from-white via-gray-200 to-gray-300",
+    emoji: "⚪",
+    prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
+  },
+  {
+    id: "grunge",
+    name: "Grunge",
+    description: "90s rock and roll",
+    gradient: "from-gray-800 to-red-900",
+    emoji: "🎭",
+    prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
+  },
 ];
 
 const VIBES = ["soft", "moody", "vibrant", "natural"];
@@ -177,40 +221,23 @@ export default function TransformPage() {
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {STYLES.map((s) => {
-              const bg = STYLE_BACKGROUNDS[s.id] || STYLE_BACKGROUNDS.minimalist;
-              const imgFilename = STYLE_IMAGE[s.id];
               const isSelected = style === s.id;
-              const imgSrc = imgFilename ? `/style-previews/${imgFilename}` : null;
-
               return (
                 <button
                   key={s.id}
                   onClick={() => setStyle(s.id)}
                   className={
-                    "relative rounded-xl overflow-hidden aspect-square transition-all " +
+                    "relative rounded-xl overflow-hidden aspect-square transition-all bg-gradient-to-br " +
+                    s.gradient + " " +
                     (isSelected
                       ? "ring-4 ring-purple-500 scale-95"
                       : "hover:scale-95 opacity-70 hover:opacity-100")
                   }
                 >
-                  {/* CSS gradient background (always visible behind image) */}
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: bg.gradient }}
-                  />
-                  {/* Local photo overlay if we have one */}
-                  {imgSrc && (
-                    <img
-                      src={imgSrc}
-                      alt={s.name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  )}
-                  {/* Gradient scrim so text is always readable */}
+                  {/* Emoji badge */}
+                  <div className="absolute top-3 right-3 text-4xl">{s.emoji}</div>
+                  {/* Gradient scrim for readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  {/* Emoji badge (always visible — gives a visual cue even with a photo) */}
-                  <div className="absolute top-2 right-2 text-2xl">{bg.emoji}</div>
                   {/* Style label */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="text-xl font-bold text-white text-center px-2 drop-shadow-lg">
@@ -317,7 +344,6 @@ export default function TransformPage() {
           {!photo && <p className="text-gray-500 text-sm mt-2">Upload a photo to continue</p>}
         </div>
 
-        {/* Ad placement - bottom */}
         <AdSenseAd />
       </div>
     </div>
