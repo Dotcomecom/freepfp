@@ -8,6 +8,50 @@ export const maxDuration = 120;
  * Uses PhotoMaker V2 - much better at preserving facial identity than InstantID
  * and significantly faster generation times
  */
+
+// Convert base64 data URL to a public URL using tmpfiles.org
+async function uploadToTmpfiles(base64Data: string): Promise<string> {
+  // Extract the base64 content and mime type
+  const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
+  if (!matches) {
+    throw new Error("Invalid base64 image format");
+  }
+
+  const mimeType = matches[1];
+  const base64Content = matches[2];
+  
+  // Convert base64 to buffer
+  const buffer = Buffer.from(base64Content, 'base64');
+  
+  // Create FormData for upload
+  const formData = new FormData();
+  const blob = new Blob([buffer], { type: mimeType });
+  formData.append('file', blob, `image-${Date.now()}.jpg`);
+  
+  // Upload to tmpfiles.org
+  const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
+    method: 'POST',
+    body: formData,
+  });
+  
+  if (!uploadResponse.ok) {
+    throw new Error(`Failed to upload image: ${uploadResponse.statusText}`);
+  }
+  
+  const result = await uploadResponse.json();
+  
+  if (result.status !== 'success') {
+    throw new Error('Upload failed');
+  }
+  
+  // tmpfiles.org returns https://tmpfiles.org/ID/filename.jpg
+  // We need https://tmpfiles.org/dl/ID/filename.jpg for direct access
+  const publicUrl = result.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+  
+  console.log(`[Upload] Image uploaded to: ${publicUrl}`);
+  return publicUrl;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { image, style, gender, vibe, palette } = await req.json();
@@ -24,6 +68,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "REPLICATE_API_TOKEN not configured" },
         { status: 500 }
+      );
+    }
+
+    // PhotoMaker V2 expects input_image as a public URL, not base64
+    let imageUrl: string;
+    if (image.startsWith('data:')) {
+      // It's base64, upload to get a public URL
+      console.log('[PhotoMaker] Converting base64 to public URL...');
+      imageUrl = await uploadToTmpfiles(image);
+    } else if (image.startsWith('http')) {
+      // Already a URL
+      imageUrl = image;
+    } else {
+      return NextResponse.json(
+        { error: "Invalid image format. Expected URL or base64 data URL." },
+        { status: 400 }
       );
     }
 
@@ -55,9 +115,6 @@ export async function POST(req: NextRequest) {
     // PhotoMaker V2 version hash
     const VERSION = "ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4";
 
-    // PhotoMaker V2 expects input_image as a string URL, not an array
-    const imageInput = image.startsWith("http") ? image : image;
-
     // Step 1: Create prediction
     const createResponse = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
@@ -70,7 +127,7 @@ export async function POST(req: NextRequest) {
         input: {
           prompt: `photo of a ${finalPrompt}`,
           neg_prompt: "blurry, low quality, distorted, deformed, disfigured, bad anatomy, extra limbs, mutation, ugly, text, watermark",
-          input_image: imageInput,
+          input_image: imageUrl,
           style_name: "Photographic (Default)",
           num_steps: 30,
           style_strength_ratio: 20,
