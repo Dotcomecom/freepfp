@@ -10,84 +10,84 @@ const STYLES = [
     id: "linkedin",
     name: "LinkedIn Profile",
     description: "Professional headshot",
-    image: "/pro-result.jpg",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face", // Professional man
     prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
   },
   {
     id: "alt-goth",
     name: "Alt / Goth",
     description: "Dark alternative style",
-    image: "/goth-result.jpg",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face", // Edgy woman
     prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
   },
   {
     id: "anime",
     name: "Anime",
     description: "Japanese animation style",
-    image: "/anime-result.jpg",
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop", // Anime illustration
     prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
   },
   {
     id: "fairycore",
     name: "Fairycore",
     description: "Whimsical fairy aesthetic",
-    image: "/style-fairycore.jpg",
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&crop=face", // Ethereal woman
     prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
   },
   {
     id: "cyberpunk",
     name: "Cyberpunk",
     description: "Futuristic neon style",
-    image: "/style-cyber.jpg",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face&con=120&sat=150", // High contrast portrait
     prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
   },
   {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Rural pastoral charm",
-    image: "/style-cottage.jpg",
+    image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&crop=face&sat=50", // Soft natural portrait
     prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
   },
   {
     id: "indie-sleaze",
     name: "Indie Sleaze",
     description: "2000s indie rock vibe",
-    image: "/style-indie.jpg",
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face&con=110", // Grungy portrait
     prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
   },
   {
     id: "dark-academia",
     name: "Dark Academia",
     description: "Literary intellectual",
-    image: "/style-academia.jpg",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face&sat=-50", // Moody portrait
     prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
   },
   {
     id: "vaporwave",
     name: "Vaporwave",
     description: "80s retro aesthetic",
-    image: "/style-vapor.jpg",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face&blend=ff6fff&blend-mode=overlay&blend-alpha=30", // Pink tinted
     prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
   },
   {
     id: "maximalist",
     name: "Maximalist",
     description: "Bold & vibrant",
-    image: "/style-maximalist.jpg",
+    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop&crop=face&sat=150", // Vibrant colorful
     prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
   },
   {
     id: "minimalist",
     name: "Minimalist",
     description: "Clean & simple",
-    image: "/style-minimal.jpg",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face&bg=ffffff", // Clean white background
     prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
   },
   {
     id: "grunge",
     name: "Grunge",
     description: "90s rock and roll",
-    image: "/style-grunge.jpg",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face&con=80&sat=-30", // Desaturated grungy
     prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
   },
 ];
@@ -220,11 +220,19 @@ export default function TransformPage() {
                   style === s.id ? "ring-4 ring-purple-500 scale-105" : "ring-0"
                 }`}
               >
-                <img src={s.image} alt={s.name} className="w-full aspect-square object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <div className="font-semibold text-white">{s.name}</div>
-                    <div className="text-xs text-gray-300">{s.description}</div>
+                <img 
+                  src={s.image} 
+                  alt={s.name} 
+                  className="w-full h-64 object-cover"
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${s.image}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-4">
+                  <div className="text-left">
+                    <h3 className="text-white font-semibold">{s.name}</h3>
+                    <p className="text-gray-300 text-sm">{s.description}</p>
                   </div>
                 </div>
               </button>
@@ -232,101 +240,60 @@ export default function TransformPage() {
           </div>
         </div>
 
-        {/* Ad placement - below styles */}
-        <AdSenseAd />
-
-        {/* Options */}
-        <div className="mb-12 grid md:grid-cols-2 gap-8">
-          <div>
-            <h2 className="text-xl font-semibold mb-3">Gender</h2>
-            <div className="flex gap-2">
-              {["female", "male"].map(g => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={`flex-1 px-4 py-2 rounded-lg transition-all ${
-                    gender === g ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
+        {/* Hidden fields - keeping for compatibility */}
+        <div className="hidden">
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-4">3. Additional Options</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-gray-300 mb-2">Gender</label>
+                <select 
+                  value={gender} 
+                  onChange={(e) => setGender(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2"
                 >
-                  {g.charAt(0).toUpperCase() + g.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-3">Vibe</h2>
-            <div className="flex gap-2 flex-wrap">
-              {VIBES.map(v => (
-                <button
-                  key={v}
-                  onClick={() => setVibe(v)}
-                  className={`px-4 py-2 rounded-lg transition-all ${
-                    vibe === v ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="non-binary">Non-binary</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Vibe</label>
+                <select 
+                  value={vibe} 
+                  onChange={(e) => setVibe(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2"
                 >
-                  {v.charAt(0).toUpperCase() + v.slice(1)}
-                </button>
-              ))}
+                  {VIBES.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-gray-300 mb-2">Palette</label>
+                <select 
+                  value={palette} 
+                  onChange={(e) => setPalette(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2"
+                >
+                  {PALETTES.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-3">Color Palette</h2>
-          <div className="flex gap-2 flex-wrap">
-            {PALETTES.map(p => (
-              <button
-                key={p}
-                onClick={() => setPalette(p)}
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  palette === p ? "bg-purple-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                {p.charAt(0).toUpperCase() + p.slice(1)}
-              </button>
-            ))}
           </div>
         </div>
 
         {/* Generate Button */}
-        <div className="text-center mb-12">
+        <div className="text-center">
           <button
             onClick={handleGenerate}
-            disabled={!photo || !style || generating || credits < 1}
-            className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold text-xl rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105"
+            disabled={generating || !photo || !style}
+            className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl font-semibold transition-all text-lg"
           >
-            {generating ? "Generating..." : `Generate (${credits} credit${credits !== 1 ? "s" : ""} available)`}
+            {generating ? "Generating..." : "Generate PFP"}
           </button>
-          {credits < 1 && (
-            <p className="text-red-400 mt-3 text-sm">No credits remaining. Purchase more below or wait for your daily free credit.</p>
-          )}
         </div>
 
-        {/* Ad placement - above pricing */}
+        {/* Ad placement - before results */}
         <AdSenseAd />
-
-        {/* Pricing */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <a href="/checkout?credits=100" className="bg-gray-900 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all">
-            <h3 className="text-xl font-semibold mb-2">100 Credits</h3>
-            <p className="text-3xl font-bold text-purple-400 mb-4">$7.99</p>
-            <p className="text-gray-400 text-sm">Perfect for trying out multiple styles</p>
-          </a>
-          <a href="/checkout?credits=500" className="bg-gray-900 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all relative">
-            <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 rounded-full text-xs font-bold">
-              POPULAR
-            </div>
-            <h3 className="text-xl font-semibold mb-2">500 Credits</h3>
-            <p className="text-3xl font-bold text-purple-400 mb-4">$29.99</p>
-            <p className="text-gray-400 text-sm">Great value for regular use</p>
-          </a>
-          <a href="/checkout?credits=1000" className="bg-gray-900 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all">
-            <h3 className="text-xl font-semibold mb-2">1000 Credits</h3>
-            <p className="text-3xl font-bold text-purple-400 mb-4">$79.99</p>
-            <p className="text-gray-400 text-sm">Best value for power users</p>
-          </a>
-        </div>
       </div>
     </div>
   );
