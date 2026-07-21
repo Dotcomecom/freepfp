@@ -5,103 +5,59 @@ import { useAuth } from "@/lib/AuthContext";
 import { getSupabaseClient } from "@/lib/supabase";
 import AdSenseAd from "@/components/AdSenseAd";
 
+// Local images are in /style-previews/*.jpg (copied from user reference photos).
+// Styles without a confirmed photo use a CSS gradient + emoji so the card is still meaningful.
+const STYLE_BACKGROUNDS: Record<string, { gradient: string; emoji: string }> = {
+  linkedin:        { gradient: "linear-gradient(135deg, #0077B5 0%, #00A0DC 100%)",      emoji: "💼" },
+  "alt-goth":      { gradient: "linear-gradient(135deg, #1a0011 0%, #4a0000 60%, #0a0a0a 100%)", emoji: "🖤" },
+  anime:           { gradient: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 40%, #a18cd1 100%)", emoji: "✨" },
+  fairycore:       { gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 30%, #a8e0a0 100%)", emoji: "🧚" },
+  cyberpunk:       { gradient: "linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 100%)", emoji: "" },
+  cottagecore:     { gradient: "linear-gradient(135deg, #6a994e 0%, #a7c957 50%, #faedcd 100%)", emoji: "🌸" },
+  "indie-sleaze":  { gradient: "linear-gradient(135deg, #ee9ca7 0%, #ffdde1 40%, #2b2b2b 100%)", emoji: "" },
+  "dark-academia": { gradient: "linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #b8860b 100%)", emoji: "📚" },
+  vaporwave:       { gradient: "linear-gradient(135deg, #7b2ff7 0%, #f107a3 50%, #00d2ff 100%)", emoji: "💾" },
+  maximalist:      { gradient: "linear-gradient(135deg, #f5af19 0%, #f12711 30%, #c471ed 60%, #12c2e9 100%)", emoji: "🌈" },
+  minimalist:      { gradient: "linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #f5f5f5 100%)", emoji: "" },
+  grunge:          { gradient: "linear-gradient(135deg, #434343 0%, #2c2c2c 40%, #ff4757 100%)", emoji: "🎭" },
+};
+
+// Image filename in /style-previews/ — leave undefined to show gradient+emoji fallback
+const STYLE_IMAGE: Record<string, string | undefined> = {
+  linkedin:   "linkedin.jpg",
+  "alt-goth": "goth.jpg",
+  fairycore:  "fairycore.jpg",
+  cyberpunk:  "cyberpunk.jpg",
+  cottagecore:"cottagecore.jpg",
+  // anime, indie-sleaze, dark-academia, vaporwave, maximalist, minimalist, grunge
+  // => gradient fallback until a reference photo is provided
+};
+
 const STYLES = [
-  {
-    id: "linkedin",
-    name: "LinkedIn Profile",
-    description: "Professional headshot",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
-    fallback: "/style-previews/linkedin.jpg",
-    prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
-  },
-  {
-    id: "alt-goth",
-    name: "Alt / Goth",
-    description: "Dark alternative style",
-    image: "/style-previews/goth.jpg",
-    fallback: "/style-previews/goth.jpg",
-    prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
-  },
-  {
-    id: "anime",
-    name: "Anime",
-    description: "Japanese animation style",
-    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
-    fallback: "/style-previews/anime.jpg",
-    prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
-  },
-  {
-    id: "fairycore",
-    name: "Fairycore",
-    description: "Whimsical fairy aesthetic",
-    image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=400&h=400&fit=crop",
-    fallback: "/style-previews/fairycore.jpg",
-    prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
-  },
-  {
-    id: "cyberpunk",
-    name: "Cyberpunk",
-    description: "Futuristic neon style",
-    image: "https://images.unsplash.com/photo-1555421689-491a97ff2040?w=400&h=400&fit=crop",
-    fallback: "/style-previews/cyberpunk.jpg",
-    prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
-  },
-  {
-    id: "cottagecore",
-    name: "Cottagecore",
-    description: "Rural pastoral charm",
-    image: "https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=400&h=400&fit=crop",
-    fallback: "/style-previews/cottagecore.jpg",
-    prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
-  },
-  {
-    id: "indie-sleaze",
-    name: "Indie Sleaze",
-    description: "2000s indie rock vibe",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop",
-    fallback: "/style-previews/indie.jpg",
-    prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
-  },
-  {
-    id: "dark-academia",
-    name: "Dark Academia",
-    description: "Literary intellectual",
-    image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=400&fit=crop",
-    fallback: "/style-previews/academia.jpg",
-    prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
-  },
-  {
-    id: "vaporwave",
-    name: "Vaporwave",
-    description: "80s retro aesthetic",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop",
-    fallback: "/style-previews/vaporwave.jpg",
-    prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
-  },
-  {
-    id: "maximalist",
-    name: "Maximalist",
-    description: "Bold & vibrant",
-    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop",
-    fallback: "/style-previews/maximalist.jpg",
-    prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
-  },
-  {
-    id: "minimalist",
-    name: "Minimalist",
-    description: "Clean & simple",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
-    fallback: "/style-previews/minimalist.jpg",
-    prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
-  },
-  {
-    id: "grunge",
-    name: "Grunge",
-    description: "90s rock and roll",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=400&fit=crop",
-    fallback: "/style-previews/grunge.jpg",
-    prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
-  },
+  { id: "linkedin",      name: "LinkedIn Profile", description: "Professional headshot",
+    prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire" },
+  { id: "alt-goth",      name: "Alt / Goth",      description: "Dark alternative style",
+    prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows" },
+  { id: "anime",         name: "Anime",           description: "Japanese animation style",
+    prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired" },
+  { id: "fairycore",     name: "Fairycore",       description: "Whimsical fairy aesthetic",
+    prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle" },
+  { id: "cyberpunk",     name: "Cyberpunk",       description: "Futuristic neon style",
+    prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic" },
+  { id: "cottagecore",   name: "Cottagecore",     description: "Rural pastoral charm",
+    prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting" },
+  { id: "indie-sleaze",  name: "Indie Sleaze",    description: "2000s indie rock vibe",
+    prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe" },
+  { id: "dark-academia", name: "Dark Academia",   description: "Literary intellectual",
+    prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe" },
+  { id: "vaporwave",     name: "Vaporwave",       description: "80s retro aesthetic",
+    prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art" },
+  { id: "maximalist",    name: "Maximalist",      description: "Bold & vibrant",
+    prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures" },
+  { id: "minimalist",    name: "Minimalist",      description: "Clean & simple",
+    prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography" },
+  { id: "grunge",        name: "Grunge",          description: "90s rock and roll",
+    prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion" },
 ];
 
 const VIBES = ["soft", "moody", "vibrant", "natural"];
@@ -116,7 +72,6 @@ export default function TransformPage() {
   const [palette, setPalette] = useState("warm");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
-  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,7 +117,6 @@ export default function TransformPage() {
         throw new Error(data.error || "Generation failed");
       }
 
-      // Deduct credit
       const { error: creditError } = await getSupabaseClient().rpc("use_credit");
       if (creditError) console.error("Credit deduction error:", creditError);
 
@@ -184,7 +138,6 @@ export default function TransformPage() {
           You have <span className="text-purple-400 font-semibold">{credits}</span> free credit{credits !== 1 ? "s" : ""} remaining today
         </p>
 
-        {/* Ad placement - below header */}
         <AdSenseAd />
 
         {error && (
@@ -224,32 +177,47 @@ export default function TransformPage() {
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {STYLES.map((s) => {
-              const hasError = imgErrors.has(s.id);
+              const bg = STYLE_BACKGROUNDS[s.id] || STYLE_BACKGROUNDS.minimalist;
+              const imgFilename = STYLE_IMAGE[s.id];
+              const isSelected = style === s.id;
+              const imgSrc = imgFilename ? `/style-previews/${imgFilename}` : null;
+
               return (
                 <button
                   key={s.id}
                   onClick={() => setStyle(s.id)}
                   className={
                     "relative rounded-xl overflow-hidden aspect-square transition-all " +
-                    (style === s.id
+                    (isSelected
                       ? "ring-4 ring-purple-500 scale-95"
                       : "hover:scale-95 opacity-70 hover:opacity-100")
                   }
                 >
-                  {!hasError && (
+                  {/* CSS gradient background (always visible behind image) */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: bg.gradient }}
+                  />
+                  {/* Local photo overlay if we have one */}
+                  {imgSrc && (
                     <img
-                      src={s.image}
+                      src={imgSrc}
                       alt={s.name}
                       className="absolute inset-0 w-full h-full object-cover"
-                      onError={() => setImgErrors(prev => new Set(prev).add(s.id))}
+                      loading="lazy"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-purple-900/50" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-4xl font-bold text-white/90 text-center px-2">
+                  {/* Gradient scrim so text is always readable */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  {/* Emoji badge (always visible — gives a visual cue even with a photo) */}
+                  <div className="absolute top-2 right-2 text-2xl">{bg.emoji}</div>
+                  {/* Style label */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="text-xl font-bold text-white text-center px-2 drop-shadow-lg">
                       {s.name}
                     </div>
                   </div>
+                  {/* Description */}
                   <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
                     <div className="text-xs text-gray-300">{s.description}</div>
                   </div>
@@ -311,7 +279,7 @@ export default function TransformPage() {
                   className={
                     "flex-1 py-2 rounded-lg capitalize transition-all " +
                     (palette === p
-                      ? "bg-amber-600 text-white"
+                      ? "bg-indigo-600 text-white"
                       : "bg-gray-800 text-gray-300 hover:bg-gray-700")
                   }
                 >
@@ -322,28 +290,34 @@ export default function TransformPage() {
           </div>
         </div>
 
-        {/* Generate Button */}
-        <div className="text-center mb-12">
+        {/* Generate */}
+        <div className="text-center">
           <button
             onClick={handleGenerate}
-            disabled={generating || (!photo || !style)}
+            disabled={generating || !photo || !style}
             className={
-              "px-12 py-4 rounded-xl font-semibold text-lg transition-all " +
+              "px-12 py-4 rounded-xl text-lg font-bold transition-all " +
               (generating || !photo || !style
-                ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 shadow-lg shadow-purple-500/50")
+                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 hover:scale-105 shadow-lg shadow-purple-500/30")
             }
           >
-            {generating ? "Generating..." : "Generate Image"}
+            {generating ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Generating...
+              </span>
+            ) : (
+              "Generate Profile Picture"
+            )}
           </button>
-          {(!photo || !style) && (
-            <p className="text-gray-500 text-sm mt-2">
-              {!photo && !style ? "Upload a photo and choose a style" : !photo ? "Upload a photo first" : "Choose a style"}
-            </p>
-          )}
+          {!photo && <p className="text-gray-500 text-sm mt-2">Upload a photo to continue</p>}
         </div>
 
-        {/* Ad placement - bottom of page */}
+        {/* Ad placement - bottom */}
         <AdSenseAd />
       </div>
     </div>
