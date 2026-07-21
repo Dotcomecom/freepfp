@@ -10,84 +10,96 @@ const STYLES = [
     id: "linkedin",
     name: "LinkedIn Profile",
     description: "Professional headshot",
-    image: "https://source.unsplash.com/400x400/?professional,headshot,business",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
+    fallback: "/style-previews/linkedin.jpg",
     prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
   },
   {
     id: "alt-goth",
     name: "Alt / Goth",
     description: "Dark alternative style",
-    image: "https://source.unsplash.com/400x400/?gothic,dark,alternative",
+    image: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&h=400&fit=crop",
+    fallback: "/style-previews/goth.jpg",
     prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
   },
   {
     id: "anime",
     name: "Anime",
     description: "Japanese animation style",
-    image: "https://source.unsplash.com/400x400/?anime,manga,japanese",
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
+    fallback: "/style-previews/anime.jpg",
     prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
   },
   {
     id: "fairycore",
     name: "Fairycore",
     description: "Whimsical fairy aesthetic",
-    image: "https://source.unsplash.com/400x400/?fairy,ethereal,magical",
+    image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=400&h=400&fit=crop",
+    fallback: "/style-previews/fairycore.jpg",
     prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
   },
   {
     id: "cyberpunk",
     name: "Cyberpunk",
     description: "Futuristic neon style",
-    image: "https://source.unsplash.com/400x400/?cyberpunk,neon,futuristic",
+    image: "https://images.unsplash.com/photo-1555421689-491a97ff2040?w=400&h=400&fit=crop",
+    fallback: "/style-previews/cyberpunk.jpg",
     prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
   },
   {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Rural pastoral charm",
-    image: "https://source.unsplash.com/400x400/?cottagecore,vintage,rural",
+    image: "https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=400&h=400&fit=crop",
+    fallback: "/style-previews/cottagecore.jpg",
     prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
   },
   {
     id: "indie-sleaze",
     name: "Indie Sleaze",
     description: "2000s indie rock vibe",
-    image: "https://source.unsplash.com/400x400/?indie,grunge,2000s",
+    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop",
+    fallback: "/style-previews/indie.jpg",
     prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
   },
   {
     id: "dark-academia",
     name: "Dark Academia",
     description: "Literary intellectual",
-    image: "https://source.unsplash.com/400x400/?dark-academia,books,intellectual",
+    image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=400&fit=crop",
+    fallback: "/style-previews/academia.jpg",
     prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
   },
   {
     id: "vaporwave",
     name: "Vaporwave",
     description: "80s retro aesthetic",
-    image: "https://source.unsplash.com/400x400/?vaporwave,retro,80s",
+    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop",
+    fallback: "/style-previews/vaporwave.jpg",
     prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
   },
   {
     id: "maximalist",
     name: "Maximalist",
     description: "Bold & vibrant",
-    image: "https://source.unsplash.com/400x400/?maximalist,colorful,bold",
+    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop",
+    fallback: "/style-previews/maximalist.jpg",
     prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
   },
   {
     id: "minimalist",
     name: "Minimalist",
     description: "Clean & simple",
-    image: "https://source.unsplash.com/400x400/?minimalist,clean,simple",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+    fallback: "/style-previews/minimalist.jpg",
     prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
   },
   {
     id: "grunge",
     name: "Grunge",
     description: "90s rock and roll",
-    image: "https://source.unsplash.com/400x400/?grunge,90s,rock",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=400&fit=crop",
+    fallback: "/style-previews/grunge.jpg",
     prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
   },
 ];
@@ -104,6 +116,7 @@ export default function TransformPage() {
   const [palette, setPalette] = useState("warm");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,45 +223,57 @@ export default function TransformPage() {
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {STYLES.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setStyle(s.id)}
-                className={`relative rounded-xl overflow-hidden aspect-square transition-all ${
-                  style === s.id
-                    ? "ring-4 ring-purple-500 scale-105"
-                    : "ring-1 ring-gray-700 hover:ring-gray-500"
-                }`}
-              >
-                <img
-                  src={s.image}
-                  alt={s.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3">
-                  <div className="text-white font-semibold text-left">{s.name}</div>
-                  <div className="text-gray-300 text-xs text-left">{s.description}</div>
-                </div>
-              </button>
-            ))}
+            {STYLES.map((s) => {
+              const hasError = imgErrors.has(s.id);
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setStyle(s.id)}
+                  className={
+                    "relative rounded-xl overflow-hidden aspect-square transition-all " +
+                    (style === s.id
+                      ? "ring-4 ring-purple-500 scale-95"
+                      : "hover:scale-95 opacity-70 hover:opacity-100")
+                  }
+                >
+                  {!hasError && (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={() => setImgErrors(prev => new Set(prev).add(s.id))}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-purple-900/50" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-4xl font-bold text-white/90 text-center px-2">
+                      {s.name}
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+                    <div className="text-xs text-gray-300">{s.description}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Options */}
-        <div className="mb-12 grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">3. Gender</h2>
-            <div className="flex gap-3">
-              {["female", "male", "neutral"].map((g) => (
+            <h3 className="text-lg font-semibold mb-3">Gender</h3>
+            <div className="flex gap-2">
+              {["female", "male", "non-binary"].map((g) => (
                 <button
                   key={g}
                   onClick={() => setGender(g)}
-                  className={`flex-1 py-3 rounded-lg transition-all ${
-                    gender === g
+                  className={
+                    "flex-1 py-2 rounded-lg transition-all " +
+                    (gender === g
                       ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700")
+                  }
                 >
                   {g.charAt(0).toUpperCase() + g.slice(1)}
                 </button>
@@ -257,38 +282,40 @@ export default function TransformPage() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-semibold mb-4">4. Vibe</h2>
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className="text-lg font-semibold mb-3">Vibe</h3>
+            <div className="flex gap-2">
               {VIBES.map((v) => (
                 <button
                   key={v}
                   onClick={() => setVibe(v)}
-                  className={`py-2 rounded-lg transition-all ${
-                    vibe === v
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
+                  className={
+                    "flex-1 py-2 rounded-lg capitalize transition-all " +
+                    (vibe === v
+                      ? "bg-pink-600 text-white"
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700")
+                  }
                 >
-                  {v.charAt(0).toUpperCase() + v.slice(1)}
+                  {v}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <h2 className="text-2xl font-semibold mb-4">5. Palette</h2>
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className="text-lg font-semibold mb-3">Color Palette</h3>
+            <div className="flex gap-2">
               {PALETTES.map((p) => (
                 <button
                   key={p}
                   onClick={() => setPalette(p)}
-                  className={`py-2 rounded-lg transition-all ${
-                    palette === p
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
+                  className={
+                    "flex-1 py-2 rounded-lg capitalize transition-all " +
+                    (palette === p
+                      ? "bg-amber-600 text-white"
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700")
+                  }
                 >
-                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                  {p}
                 </button>
               ))}
             </div>
@@ -296,15 +323,28 @@ export default function TransformPage() {
         </div>
 
         {/* Generate Button */}
-        <div className="text-center">
+        <div className="text-center mb-12">
           <button
             onClick={handleGenerate}
-            disabled={!photo || !style || generating}
-            className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xl rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={generating || (!photo || !style)}
+            className={
+              "px-12 py-4 rounded-xl font-semibold text-lg transition-all " +
+              (generating || !photo || !style
+                ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 shadow-lg shadow-purple-500/50")
+            }
           >
-            {generating ? "Generating..." : "Generate"}
+            {generating ? "Generating..." : "Generate Image"}
           </button>
+          {(!photo || !style) && (
+            <p className="text-gray-500 text-sm mt-2">
+              {!photo && !style ? "Upload a photo and choose a style" : !photo ? "Upload a photo first" : "Choose a style"}
+            </p>
+          )}
         </div>
+
+        {/* Ad placement - bottom of page */}
+        <AdSenseAd />
       </div>
     </div>
   );
