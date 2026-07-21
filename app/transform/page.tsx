@@ -18,7 +18,7 @@ const STYLES = [
     id: "alt-goth",
     name: "Alt / Goth",
     description: "Dark alternative style",
-    image: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&h=400&fit=crop",
+    image: "/style-previews/goth.jpg",
     fallback: "/style-previews/goth.jpg",
     prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
   },
