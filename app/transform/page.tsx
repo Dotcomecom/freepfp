@@ -10,14 +10,14 @@ const STYLES = [
     id: "linkedin",
     name: "LinkedIn Profile",
     description: "Professional headshot",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
+    image: "/style-previews/linkedin.jpg",
     prompt: "professional LinkedIn profile headshot, corporate portrait, clean neutral background, soft studio lighting, business attire",
   },
   {
     id: "alt-goth",
     name: "Alt / Goth",
     description: "Dark alternative style",
-    image: "https://images.unsplash.com/photo-1509515837298-2c67a3933321?w=400&h=400&fit=crop",
+    image: "/style-previews/goth.jpg",
     prompt: "gothic alternative portrait, dark aesthetic, moody lighting, edgy style, dramatic shadows",
   },
   {
@@ -31,21 +31,21 @@ const STYLES = [
     id: "fairycore",
     name: "Fairycore",
     description: "Whimsical fairy aesthetic",
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=400&fit=crop",
+    image: "/style-previews/fairycore.jpg",
     prompt: "fairycore portrait, whimsical fairy aesthetic, soft pastel colors, dreamy ethereal glow, magical sparkle",
   },
   {
     id: "cyberpunk",
     name: "Cyberpunk",
     description: "Futuristic neon style",
-    image: "https://images.unsplash.com/photo-1515630278258-407f66498911?w=400&h=400&fit=crop",
+    image: "/style-previews/cyberpunk.jpg",
     prompt: "cyberpunk portrait, neon-lit futuristic style, vibrant pink and cyan neon, dark urban background, sci-fi aesthetic",
   },
   {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Rural pastoral charm",
-    image: "https://images.unsplash.com/photo-1513001900707-8a1a4f4909b8?w=400&h=400&fit=crop",
+    image: "/style-previews/cottagecore.jpg",
     prompt: "cottagecore portrait, rustic rural aesthetic, soft natural lighting, vintage countryside charm, pastoral setting",
   },
   {
@@ -80,14 +80,14 @@ const STYLES = [
     id: "minimalist",
     name: "Minimalist",
     description: "Clean & simple",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    image: "/style-previews/minimalist.jpg",
     prompt: "minimalist clean portrait, pure white background, elegant understated, soft even lighting, modern professional photography",
   },
   {
     id: "grunge",
     name: "Grunge",
     description: "90s rock and roll",
-    image: "https://images.unsplash.com/photo-1534073828943-f801091bb18c?w=400&h=400&fit=crop",
+    image: "/style-previews/grunge.jpg",
     prompt: "grunge portrait, 90s rock and roll aesthetic, edgy texture, dark moody lighting, alternative rebellion",
   },
 ];
@@ -211,136 +211,150 @@ export default function TransformPage() {
         {/* Style Selection */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {STYLES.map((s) => {
-              const isSelected = style === s.id;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => setStyle(s.id)}
-                  className={`relative rounded-xl overflow-hidden transition-all ${
-                    isSelected ? "ring-4 ring-purple-500 scale-105" : "hover:scale-105 opacity-80 hover:opacity-100"
-                  }`}
-                >
-                  {/* Image */}
-                  <div className="aspect-square w-full relative">
-                    <img 
-                      src={s.image} 
-                      alt={s.name}
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                    
-                    {/* Content */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
-                      <h3 className="text-white font-bold text-lg mb-1 drop-shadow-lg">{s.name}</h3>
-                      <p className="text-gray-200 text-sm drop-shadow-md">{s.description}</p>
-                    </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {STYLES.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setStyle(s.id)}
+                className={`group relative rounded-xl overflow-hidden transition-all aspect-square ${
+                  style === s.id
+                    ? "ring-4 ring-purple-500 scale-[1.02]"
+                    : "ring-1 ring-white/10 hover:ring-purple-400/50"
+                }`}
+              >
+                <img
+                  src={s.image}
+                  alt={s.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="text-white font-semibold text-sm">{s.name}</div>
+                  <div className="text-gray-300 text-xs">{s.description}</div>
+                </div>
+                {style === s.id && (
+                  <div className="absolute top-2 right-2 bg-purple-500 rounded-full w-6 h-6 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                  
-                  {/* Selected indicator */}
-                  {isSelected && (
-                    <div className="absolute top-3 right-3 bg-purple-500 rounded-full p-1.5 shadow-lg">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Options */}
-        <div className="mb-12 grid md:grid-cols-3 gap-6">
-          <div>
-            <h3 className="text-xl font-semibold mb-3">Gender</h3>
-            <div className="flex gap-2">
-              {["female", "male"].map((g) => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={`flex-1 py-2 px-4 rounded-lg transition-all ${
-                    gender === g
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
-                >
-                  {g.charAt(0).toUpperCase() + g.slice(1)}
-                </button>
-              ))}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4">3. Fine-Tune (optional)</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Gender</label>
+              <div className="flex gap-2">
+                {["female", "male"].map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setGender(g)}
+                    className={`px-4 py-2 rounded-lg text-sm capitalize transition-all ${
+                      gender === g
+                        ? "bg-purple-500 text-white"
+                        : "bg-white/5 text-gray-300 hover:bg-white/10"
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold mb-3">Vibe</h3>
-            <div className="flex gap-2">
-              {VIBES.map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setVibe(v)}
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${
-                    vibe === v
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
-                >
-                  {v.charAt(0).toUpperCase() + v.slice(1)}
-                </button>
-              ))}
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Vibe</label>
+              <div className="flex flex-wrap gap-2">
+                {VIBES.map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setVibe(v)}
+                    className={`px-3 py-2 rounded-lg text-sm capitalize transition-all ${
+                      vibe === v
+                        ? "bg-purple-500 text-white"
+                        : "bg-white/5 text-gray-300 hover:bg-white/10"
+                    }`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold mb-3">Palette</h3>
-            <div className="flex gap-2">
-              {PALETTES.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPalette(p)}
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${
-                    palette === p
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
-                >
-                  {p.charAt(0).toUpperCase() + p.slice(1)}
-                </button>
-              ))}
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Palette</label>
+              <div className="flex flex-wrap gap-2">
+                {PALETTES.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPalette(p)}
+                    className={`px-3 py-2 rounded-lg text-sm capitalize transition-all ${
+                      palette === p
+                        ? "bg-purple-500 text-white"
+                        : "bg-white/5 text-gray-300 hover:bg-white/10"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Generate Button */}
-        <div className="mb-12">
+        <div className="text-center mb-12">
           <button
             onClick={handleGenerate}
             disabled={generating || !photo || !style}
-            className="w-full py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed rounded-xl text-xl font-bold transition-all shadow-lg hover:shadow-purple-500/50"
+            className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all transform hover:scale-105"
           >
-            {generating ? "Generating..." : "Generate PFP"}
+            {generating ? (
+              <span className="flex items-center gap-3">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Generating...
+              </span>
+            ) : (
+              "✨ Generate PFP"
+            )}
           </button>
+          <p className="text-gray-500 text-sm mt-3">Uses AI (Replicate PhotoMaker V2) • 1 credit per generation</p>
         </div>
 
         {/* Result */}
         {resultUrl && (
-          <div className="mb-12">
+          <div className="text-center mb-12">
             <h2 className="text-2xl font-semibold mb-4">Your New PFP</h2>
-            <div className="bg-gray-900 rounded-xl p-6 text-center">
-              <img src={resultUrl} alt="Generated PFP" className="max-w-md mx-auto rounded-lg shadow-2xl mb-4" />
+            <img src={resultUrl} alt="Generated PFP" className="max-w-md mx-auto rounded-xl shadow-2xl mb-4" />
+            <div className="flex justify-center gap-4">
               <a
                 href={resultUrl}
-                download="pfp.png"
-                className="inline-block py-3 px-8 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-all"
+                download
+                className="px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold transition-all"
               >
                 Download
               </a>
+              <button
+                onClick={() => {
+                  setResultUrl(null);
+                  setPhoto(null);
+                  setStyle(null);
+                }}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-all"
+              >
+                Generate Another
+              </button>
             </div>
           </div>
         )}
+
+        <AdSenseAd />
       </div>
     </div>
   );
