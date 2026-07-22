@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { getSupabaseClient } from "@/lib/supabase";
+import ImageGrid from "@/components/ImageGrid";
 import AdSenseAd from "@/components/AdSenseAd";
 
 const STYLES = [
@@ -24,7 +25,7 @@ const STYLES = [
     id: "anime",
     name: "Anime",
     description: "Japanese animation style",
-    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
+    image: "/style-previews/anime.jpg",
     prompt: "anime portrait style, Japanese animation aesthetic, vibrant colors, cel shading, manga inspired",
   },
   {
@@ -52,28 +53,28 @@ const STYLES = [
     id: "indie-sleaze",
     name: "Indie Sleaze",
     description: "2000s indie rock vibe",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop",
+    image: "/style-previews/indie-sleaze.jpg",
     prompt: "indie sleaze portrait, 2000s indie rock aesthetic, grainy film filter, flash photography, downtown party vibe",
   },
   {
     id: "dark-academia",
     name: "Dark Academia",
     description: "Literary intellectual",
-    image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=400&fit=crop",
+    image: "/style-previews/dark-academia.jpg",
     prompt: "dark academia portrait, literary aesthetic, moody scholarly atmosphere, warm vintage tones, classical intellectual vibe",
   },
   {
     id: "vaporwave",
     name: "Vaporwave",
     description: "80s retro aesthetic",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=400&fit=crop",
+    image: "/style-previews/vaporwave.jpg",
     prompt: "vaporwave portrait, 80s retro aesthetic, pastel pink and purple gradient, glitch effects, nostalgic digital art",
   },
   {
     id: "maximalist",
     name: "Maximalist",
     description: "Bold & vibrant",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=400&fit=crop",
+    image: "/style-previews/maximalist.jpg",
     prompt: "maximalist portrait, bold patterns, vibrant colors, artistic editorial photography, colorful statement fashion, layered textures",
   },
   {
@@ -95,8 +96,11 @@ const STYLES = [
 const VIBES = ["soft", "moody", "vibrant", "natural"];
 const PALETTES = ["warm", "cool", "neutral", "bold"];
 
+// Track if we just generated a new image (to refresh gallery)
+let generationCounter = 0;
+
 export default function TransformPage() {
-  const { user, credits } = useAuth();
+  const { user, credits, useCredit } = useAuth();
   const [photo, setPhoto] = useState<string | null>(null);
   const [style, setStyle] = useState<string | null>(null);
   const [gender, setGender] = useState("female");
@@ -105,6 +109,8 @@ export default function TransformPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [galleryKey, setGalleryKey] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +135,7 @@ export default function TransformPage() {
     setGenerating(true);
     setError("");
     setResultUrl(null);
+    setSaveSuccess(false);
 
     try {
       const selectedStyle = STYLES.find(s => s.id === style);
@@ -151,10 +158,32 @@ export default function TransformPage() {
         throw new Error(data.error || "Generation failed");
       }
 
-      setResultUrl(data.url || null);
+      // API returns imageUrl (was previously reading data.url which was undefined)
+      const imageUrl = data.imageUrl || data.url;
+      setResultUrl(imageUrl || null);
 
-      const { error: creditError } = await getSupabaseClient().rpc("use_credit");
-      if (creditError) console.error("Credit deduction error:", creditError);
+      // Save generation to Supabase generations table
+      if (imageUrl && user) {
+        try {
+          const db = getSupabaseClient();
+          await (db.from("generations") as any).insert({
+            user_id: user.id,
+            style: style,
+            gender: gender,
+            vibe: vibe,
+            palette: palette,
+            image_url: imageUrl,
+          });
+          console.log("Generation saved to database");
+          // Refresh gallery
+          setGalleryKey(k => k + 1);
+        } catch (dbErr) {
+          console.error("Failed to save generation to DB:", dbErr);
+        }
+      }
+
+      // Deduct credit using AuthContext method
+      await useCredit();
 
     } catch (err) {
       console.error("Generation error:", err);
@@ -351,6 +380,14 @@ export default function TransformPage() {
                 Generate Another
               </button>
             </div>
+          </div>
+        )}
+
+        {/* User's Generation Gallery */}
+        {user && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-4">Your Gallery</h2>
+            <ImageGrid key={galleryKey} userId={user.id} />
           </div>
         )}
 

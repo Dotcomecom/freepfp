@@ -1,0 +1,17 @@
+diff --git a/app/transform/page.tsx b/app/transform/page.tsx
+--- a/app/transform/page.tsx
++++ b/app/transform/page.tsx
+@@ -24,7 +24,7 @@ const STYLES = [
+   {
+     id: "anime",
+     name: "Anime",
+     description: "Japanese animation style",
+-    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
++    image: null,
+     gradient: "from-pink-300 via-purple-300 to-indigo-400",
+     icon: "✨",
+-  },
++  },
+   {
+     id: "fairycore",
+     name: "Fairycore",
