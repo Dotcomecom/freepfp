@@ -36,15 +36,17 @@ export default function AuthButton() {
         }}
         className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105"
       >
-        Sign In
+        → Sign In
       </button>
 
-      <AuthModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        mode={mode}
-        onSwitchMode={() => setMode(m => m === "signin" ? "signup" : "signin")}
-      />
+      {isOpen && (
+        <AuthModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          mode={mode}
+          onSwitchMode={() => setMode(m => m === "signin" ? "signup" : "signin")}
+        />
+      )}
     </>
   );
 }
