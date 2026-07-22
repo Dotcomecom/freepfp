@@ -1,0 +1,14 @@
+{
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/_not-found/page": "/_not-found",
+  "/api/stripe/checkout/route": "/api/stripe/checkout",
+  "/api/stripe/webhook/route": "/api/stripe/webhook",
+  "/api/generate/route": "/api/generate",
+  "/checkout/page": "/checkout",
+  "/page": "/",
+  "/about/page": "/about",
+  "/faq/page": "/faq",
+  "/terms/page": "/terms",
+  "/transform/page": "/transform",
+  "/privacy/page": "/privacy"
+}
