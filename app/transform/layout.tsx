@@ -48,7 +48,7 @@ export default function TransformLayout({
   return (
     <>
       <Header />
-      {children}
+      <main>{children}</main>
     </>
   );
 }
