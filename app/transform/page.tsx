@@ -138,13 +138,13 @@ export default function TransformPage() {
     setSaveSuccess(false);
 
     try {
-      const selectedStyle = STYLES.find((s) => s.id === style);
+      const selectedStyle = STYLES.find(s => s.id === style);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           image: photo,
-          style,
+          style: style,
           prompt: selectedStyle?.prompt || "",
           gender,
           vibe,
@@ -166,13 +166,13 @@ export default function TransformPage() {
           const db = getSupabaseClient();
           await (db.from("generations") as any).insert({
             user_id: user.id,
-            style,
-            gender,
-            vibe,
-            palette,
+            style: style,
+            gender: gender,
+            vibe: vibe,
+            palette: palette,
             image_url: imageUrl,
           });
-          setGalleryKey((k) => k + 1);
+          setGalleryKey(k => k + 1);
         } catch (dbErr) {
           console.error("Failed to save generation to DB:", dbErr);
         }
@@ -187,50 +187,75 @@ export default function TransformPage() {
     }
   };
 
+  const handleSaveToGallery = async () => {
+    if (!resultUrl || !user) return;
+    try {
+      const db = getSupabaseClient();
+      await (db.from("generations") as any).insert({
+        user_id: user.id,
+        style: style || "custom",
+        gender,
+        vibe,
+        palette,
+        image_url: resultUrl,
+      });
+      setSaveSuccess(true);
+      setGalleryKey(k => k + 1);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error("Failed to save to gallery:", err);
+    }
+  };
+
   return (
-    <div className="min-h-screen py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-          Transform Your Photo
-        </h1>
-        <p className="text-center text-gray-400 mb-8">
-          You have <span className="text-purple-400 font-semibold">{credits}</span> free credit
-          {credits !== 1 ? "s" : ""} remaining today
-        </p>
+    <div className="min-h-screen bg-black text-white pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Transform Your Photo
+          </h1>
+          <p className="text-center text-gray-400 mb-8">
+            You have <span className="text-purple-400 font-semibold">{credits}</span> free credit{credits !== 1 ? "s" : ""} remaining today
+          </p>
+        </div>
 
         <AdSenseAd />
 
         {error && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-2xl mb-8">
             {error}
           </div>
         )}
 
+        {/* Photo Upload */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">1. Upload Your Photo</h2>
           <input
-            ref={fileInputRef}
             type="file"
-            accept="image/*"
+            ref={fileInputRef}
             onChange={handlePhotoUpload}
+            accept="image/*"
             className="hidden"
           />
-          <button
+          <div
             onClick={() => fileInputRef.current?.click()}
-            className="w-full border-2 border-dashed border-purple-500/50 hover:border-purple-400 rounded-xl p-12 transition-all"
+            className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
+              photo ? "border-purple-500" : "border-white/20 hover:border-purple-400"
+            }`}
           >
             {photo ? (
-              <img src={photo} alt="Selected" className="max-h-64 mx-auto rounded-lg" />
+              <img src={photo} alt="Selected" className="max-w-xs mx-auto rounded-xl" />
             ) : (
-              <div className="text-gray-400">
-                <div className="text-6xl mb-4">📸</div>
-                <div className="text-xl">Click to upload your photo</div>
-                <div className="text-sm mt-2">PNG, JPG, or WEBP (max 10MB)</div>
-              </div>
+              <>
+                <div className="text-5xl mb-4">📸</div>
+                <p className="text-gray-400">Click to upload your photo</p>
+                <p className="text-gray-600 text-sm mt-2">JPG, PNG, or WebP (max 10MB)</p>
+              </>
             )}
-          </button>
+          </div>
         </div>
 
+        {/* Style Selection */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -238,9 +263,9 @@ export default function TransformPage() {
               <button
                 key={s.id}
                 onClick={() => setStyle(s.id)}
-                className={`group relative rounded-xl overflow-hidden transition-all aspect-square ${
+                className={`relative aspect-square rounded-xl overflow-hidden transition-all transform hover:scale-[1.02] ${
                   style === s.id
-                    ? "ring-4 ring-purple-500 scale-[1.02]"
+                    ? "ring-2 ring-purple-500 scale-[1.02]"
                     : "ring-1 ring-white/10 hover:ring-purple-400/50"
                 }`}
               >
@@ -252,18 +277,8 @@ export default function TransformPage() {
                 </div>
                 {style === s.id && (
                   <div className="absolute top-2 right-2 bg-purple-500 rounded-full w-6 h-6 flex items-center justify-center">
-                    <svg
-                      className="w-4 h-4 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                 )}
@@ -272,6 +287,7 @@ export default function TransformPage() {
           </div>
         </div>
 
+        {/* Options */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">3. Fine-Tune (optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -344,20 +360,8 @@ export default function TransformPage() {
                 {generating ? (
                   <span className="flex items-center gap-3">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                     Generating...
                   </span>
@@ -365,9 +369,7 @@ export default function TransformPage() {
                   "✨ Generate PFP"
                 )}
               </button>
-              <p className="text-gray-500 text-sm mt-3">
-                Uses AI (Replicate PhotoMaker V2) • 1 credit per generation
-              </p>
+              <p className="text-gray-500 text-sm mt-3">Uses AI (Replicate PhotoMaker V2) • 1 credit per generation</p>
             </div>
           )}
         </GenerateGuard>
@@ -376,11 +378,7 @@ export default function TransformPage() {
         {resultUrl && (
           <div className="text-center mb-12">
             <h2 className="text-2xl font-semibold mb-4">Your New PFP</h2>
-            <img
-              src={resultUrl}
-              alt="Generated PFP"
-              className="max-w-md mx-auto rounded-xl shadow-2xl mb-4"
-            />
+            <img src={resultUrl} alt="Generated PFP" className="max-w-md mx-auto rounded-xl shadow-2xl mb-4" />
             <div className="flex justify-center gap-4">
               <a
                 href={resultUrl}
@@ -389,6 +387,17 @@ export default function TransformPage() {
               >
                 Download
               </a>
+              <button
+                onClick={handleSaveToGallery}
+                disabled={saveSuccess}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                  saveSuccess
+                    ? "bg-green-500 text-white"
+                    : "bg-white/10 hover:bg-white/20"
+                }`}
+              >
+                {saveSuccess ? "✓ Saved" : "Save to Gallery"}
+              </button>
               <button
                 onClick={() => {
                   setResultUrl(null);
