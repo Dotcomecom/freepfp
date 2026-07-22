@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { getSupabaseClient } from "@/lib/supabase";
 import ImageGrid from "@/components/ImageGrid";
 import AdSenseAd from "@/components/AdSenseAd";
+import GenerateGuard from "@/components/GenerateGuard";
 
 const STYLES = [
   {
@@ -96,7 +97,6 @@ const STYLES = [
 const VIBES = ["soft", "moody", "vibrant", "natural"];
 const PALETTES = ["warm", "cool", "neutral", "bold"];
 
-// Track if we just generated a new image (to refresh gallery)
 let generationCounter = 0;
 
 export default function TransformPage() {
@@ -122,13 +122,13 @@ export default function TransformPage() {
     }
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (openSignIn: () => void) => {
     if (!photo || !style) {
       setError("Please upload a photo and select a style");
       return;
     }
     if (!user) {
-      setError("Please sign in to generate images");
+      openSignIn();
       return;
     }
 
@@ -138,13 +138,13 @@ export default function TransformPage() {
     setSaveSuccess(false);
 
     try {
-      const selectedStyle = STYLES.find(s => s.id === style);
+      const selectedStyle = STYLES.find((s) => s.id === style);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           image: photo,
-          style: style,
+          style,
           prompt: selectedStyle?.prompt || "",
           gender,
           vibe,
@@ -158,33 +158,27 @@ export default function TransformPage() {
         throw new Error(data.error || "Generation failed");
       }
 
-      // API returns imageUrl (was previously reading data.url which was undefined)
       const imageUrl = data.imageUrl || data.url;
       setResultUrl(imageUrl || null);
 
-      // Save generation to Supabase generations table
       if (imageUrl && user) {
         try {
           const db = getSupabaseClient();
           await (db.from("generations") as any).insert({
             user_id: user.id,
-            style: style,
-            gender: gender,
-            vibe: vibe,
-            palette: palette,
+            style,
+            gender,
+            vibe,
+            palette,
             image_url: imageUrl,
           });
-          console.log("Generation saved to database");
-          // Refresh gallery
-          setGalleryKey(k => k + 1);
+          setGalleryKey((k) => k + 1);
         } catch (dbErr) {
           console.error("Failed to save generation to DB:", dbErr);
         }
       }
 
-      // Deduct credit using AuthContext method
       await useCredit();
-
     } catch (err) {
       console.error("Generation error:", err);
       setError(err instanceof Error ? err.message : "Generation failed");
@@ -200,7 +194,8 @@ export default function TransformPage() {
           Transform Your Photo
         </h1>
         <p className="text-center text-gray-400 mb-8">
-          You have <span className="text-purple-400 font-semibold">{credits}</span> free credit{credits !== 1 ? "s" : ""} remaining today
+          You have <span className="text-purple-400 font-semibold">{credits}</span> free credit
+          {credits !== 1 ? "s" : ""} remaining today
         </p>
 
         <AdSenseAd />
@@ -211,7 +206,6 @@ export default function TransformPage() {
           </div>
         )}
 
-        {/* Photo Upload */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">1. Upload Your Photo</h2>
           <input
@@ -237,7 +231,6 @@ export default function TransformPage() {
           </button>
         </div>
 
-        {/* Style Selection */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">2. Choose a Style</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -251,11 +244,7 @@ export default function TransformPage() {
                     : "ring-1 ring-white/10 hover:ring-purple-400/50"
                 }`}
               >
-                <img
-                  src={s.image}
-                  alt={s.name}
-                  className="w-full h-full object-cover"
-                />
+                <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <div className="text-white font-semibold text-sm">{s.name}</div>
@@ -263,8 +252,18 @@ export default function TransformPage() {
                 </div>
                 {style === s.id && (
                   <div className="absolute top-2 right-2 bg-purple-500 rounded-full w-6 h-6 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
                 )}
@@ -273,7 +272,6 @@ export default function TransformPage() {
           </div>
         </div>
 
-        {/* Options */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">3. Fine-Tune (optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -335,32 +333,54 @@ export default function TransformPage() {
         </div>
 
         {/* Generate Button */}
-        <div className="text-center mb-12">
-          <button
-            onClick={handleGenerate}
-            disabled={generating || !photo || !style}
-            className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all transform hover:scale-105"
-          >
-            {generating ? (
-              <span className="flex items-center gap-3">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Generating...
-              </span>
-            ) : (
-              "✨ Generate PFP"
-            )}
-          </button>
-          <p className="text-gray-500 text-sm mt-3">Uses AI (Replicate PhotoMaker V2) • 1 credit per generation</p>
-        </div>
+        <GenerateGuard>
+          {(openSignIn) => (
+            <div className="text-center mb-12">
+              <button
+                onClick={() => handleGenerate(openSignIn)}
+                disabled={generating || !photo || !style}
+                className="px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-bold text-lg transition-all transform hover:scale-105"
+              >
+                {generating ? (
+                  <span className="flex items-center gap-3">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Generating...
+                  </span>
+                ) : (
+                  "✨ Generate PFP"
+                )}
+              </button>
+              <p className="text-gray-500 text-sm mt-3">
+                Uses AI (Replicate PhotoMaker V2) • 1 credit per generation
+              </p>
+            </div>
+          )}
+        </GenerateGuard>
 
         {/* Result */}
         {resultUrl && (
           <div className="text-center mb-12">
             <h2 className="text-2xl font-semibold mb-4">Your New PFP</h2>
-            <img src={resultUrl} alt="Generated PFP" className="max-w-md mx-auto rounded-xl shadow-2xl mb-4" />
+            <img
+              src={resultUrl}
+              alt="Generated PFP"
+              className="max-w-md mx-auto rounded-xl shadow-2xl mb-4"
+            />
             <div className="flex justify-center gap-4">
               <a
                 href={resultUrl}
